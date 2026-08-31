@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wetomate Testing"
+  short_description: "Write robust toolkit and n8n node tests"
+  default_prompt: "Use $wetomate-testing to add behavior-focused tests for this Wetomate change."

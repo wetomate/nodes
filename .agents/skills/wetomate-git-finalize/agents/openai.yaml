@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wetomate Git Finalize"
+  short_description: "Review diffs and prepare n8n-style commits"
+  default_prompt: "Use $wetomate-git-finalize to review the complete working tree and propose a commit message."

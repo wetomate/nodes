@@ -1,0 +1,50 @@
+{
+   "name": "@wetomate/n8n-node-toolkit",
+   "version": "1.0.2",
+   "description": "Shared TypeScript utilities for building maintainable n8n nodes",
+   "main": "dist/index.js",
+   "types": "dist/index.d.ts",
+   "scripts": {
+      "build": "tsc",
+      "test": "jest",
+      "pack:packages": "npm pack --pack-destination ./packages",
+      "prepublishOnly": "npm run build && npm test"
+   },
+   "files": [
+      "dist"
+   ],
+   "keywords": [
+      "n8n",
+      "wetomate",
+      "typescript",
+      "community-node",
+      "toolkit"
+   ],
+   "license": "MIT",
+   "author": {
+      "name": "Wetomate"
+   },
+   "homepage": "https://github.com/wetomate/nodes#readme",
+   "bugs": {
+      "url": "https://github.com/wetomate/nodes/issues"
+   },
+   "repository": {
+      "type": "git",
+      "url": "git+https://github.com/wetomate/nodes.git",
+      "directory": "wetomate-node-toolkit"
+   },
+   "publishConfig": {
+      "access": "public"
+   },
+   "devDependencies": {
+      "@types/jest": "^30.0.0",
+      "@types/node": "^24.0.12",
+      "jest": "^30.0.5",
+      "n8n-workflow": "*",
+      "ts-jest": "^29.4.1",
+      "typescript": "^5.9.3"
+   },
+   "peerDependencies": {
+      "n8n-workflow": "*"
+   }
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wetomate Toolkit Design"
+  short_description: "Design a clean, extensible n8n toolkit"
+  default_prompt: "Use $wetomate-toolkit-design to review and improve this toolkit design."

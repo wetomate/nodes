@@ -1,0 +1,4 @@
+interface:
+   display_name: "Wetomate n8n Verification"
+   short_description: "Audit packages against n8n verification rules"
+   default_prompt: "Use $wetomate-n8n-verification to audit this community node package for current n8n verification eligibility and technical compatibility."

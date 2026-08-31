@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wetomate Release"
+  short_description: "Prepare and publish Wetomate packages safely"
+  default_prompt: "Use $wetomate-release to prepare and validate this Wetomate package release."

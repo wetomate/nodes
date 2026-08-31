@@ -1,0 +1,25 @@
+{
+	"name": "@wetomate/nodes",
+	"version": "0.0.0",
+	"private": true,
+	"description": "Wetomate's toolkit and community nodes for n8n",
+	"license": "MIT",
+	"workspaces": [
+		"wetomate-node-toolkit",
+		"n8n-nodes-*"
+	],
+	"scripts": {
+		"build": "npm run build --workspaces --if-present",
+		"check:packages": "node scripts/validate-community-node-packages.js",
+		"lint": "npm run lint --workspaces --if-present",
+		"test": "npm run test:scripts && npm run test --workspaces --if-present",
+		"test:scripts": "node --test scripts/*.test.js"
+	},
+	"devDependencies": {
+		"esbuild": "^0.28.2",
+		"jsonc-eslint-parser": "^2.4.1"
+	},
+	"engines": {
+		"node": ">=22"
+	}
+}

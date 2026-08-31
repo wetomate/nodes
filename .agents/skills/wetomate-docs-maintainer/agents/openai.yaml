@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wetomate Docs Maintainer"
+  short_description: "Keep Wetomate repository documentation accurate"
+  default_prompt: "Use $wetomate-docs-maintainer to update the repository documentation for this change."

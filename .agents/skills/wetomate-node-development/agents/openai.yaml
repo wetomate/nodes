@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wetomate Node Development"
+  short_description: "Build consistent Wetomate n8n nodes"
+  default_prompt: "Use $wetomate-node-development to implement this Wetomate n8n node change."
