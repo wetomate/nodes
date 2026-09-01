@@ -1,0 +1,154 @@
+{
+	"id": "wetomate-example-duo-human-in-the-loop-approval",
+	"name": "[Wetomate Example] Duo Human-in-the-Loop Approval",
+	"nodes": [
+		{
+			"parameters": {
+				"httpMethod": "POST",
+				"path": "wetomate/duo/approval",
+				"responseMode": "onReceived",
+				"options": {}
+			},
+			"id": "wetomate-example-duo-approval-webhook",
+			"name": "Event Trigger",
+			"type": "n8n-nodes-base.webhook",
+			"typeVersion": 2,
+			"position": [0, 0]
+		},
+		{
+			"parameters": {
+				"endpoint": "preauth",
+				"userIdentifier": {
+					"mode": "username",
+					"value": "={{ $json.body.adminUsername }}"
+				},
+				"preAuthOptionalFields": {
+					"clientSupportsVerifiedPush": true,
+					"ipaddr": "={{ $json.body.sourceIp }}"
+				}
+			},
+			"id": "wetomate-example-duo-approval-preauth",
+			"name": "Check Administrator Access",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [240, 0]
+		},
+		{
+			"parameters": {
+				"endpoint": "auth",
+				"userIdentifier": {
+					"mode": "username",
+					"value": "={{ $('Event Trigger').item.json.body.adminUsername }}"
+				},
+				"factor": "push",
+				"device": "auto",
+				"pushinfo": {
+					"pairs": [
+						{
+							"key": "event",
+							"value": "={{ $('Event Trigger').item.json.body.eventId }}"
+						},
+						{
+							"key": "action",
+							"value": "={{ $('Event Trigger').item.json.body.action }}"
+						},
+						{
+							"key": "target",
+							"value": "={{ $('Event Trigger').item.json.body.target }}"
+						}
+					]
+				},
+				"authOptionalFields": {
+					"async": false,
+					"display_username": "={{ $('Event Trigger').item.json.body.requestedBy }}",
+					"type": "Approval required"
+				}
+			},
+			"id": "wetomate-example-duo-approval-auth",
+			"name": "Request Administrator Approval",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [480, 0]
+		},
+		{
+			"parameters": {
+				"conditions": {
+					"options": {
+						"caseSensitive": true,
+						"leftValue": "",
+						"typeValidation": "strict",
+						"version": 2
+					},
+					"conditions": [
+						{
+							"id": "wetomate-example-duo-approval-allow",
+							"leftValue": "={{ $json.result.response.result }}",
+							"rightValue": "allow",
+							"operator": { "type": "string", "operation": "equals" }
+						}
+					],
+					"combinator": "and"
+				}
+			},
+			"id": "wetomate-example-duo-approval-if",
+			"name": "Approved?",
+			"type": "n8n-nodes-base.if",
+			"typeVersion": 2.2,
+			"position": [720, 0]
+		},
+		{
+			"parameters": {
+				"method": "POST",
+				"url": "={{ $('Event Trigger').item.json.body.actionUrl }}",
+				"sendBody": true,
+				"specifyBody": "json",
+				"jsonBody": "={{ JSON.stringify({ eventId: $('Event Trigger').item.json.body.eventId, action: $('Event Trigger').item.json.body.action, target: $('Event Trigger').item.json.body.target, approvedBy: $('Event Trigger').item.json.body.adminUsername }) }}",
+				"options": {}
+			},
+			"id": "wetomate-example-duo-approval-action",
+			"name": "Execute Approved Action",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [960, -80]
+		},
+		{
+			"parameters": {
+				"assignments": {
+					"assignments": [
+						{
+							"id": "wetomate-example-duo-approval-denied-message",
+							"name": "status",
+							"type": "string",
+							"value": "Approval denied; action was not executed."
+						}
+					]
+				},
+				"options": {}
+			},
+			"id": "wetomate-example-duo-approval-denied",
+			"name": "Record Denied Approval",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [960, 120]
+		}
+	],
+	"connections": {
+		"Event Trigger": {
+			"main": [[{ "node": "Check Administrator Access", "type": "main", "index": 0 }]]
+		},
+		"Check Administrator Access": {
+			"main": [[{ "node": "Request Administrator Approval", "type": "main", "index": 0 }]]
+		},
+		"Request Administrator Approval": {
+			"main": [[{ "node": "Approved?", "type": "main", "index": 0 }]]
+		},
+		"Approved?": {
+			"main": [
+				[{ "node": "Execute Approved Action", "type": "main", "index": 0 }],
+				[{ "node": "Record Denied Approval", "type": "main", "index": 0 }]
+			]
+		}
+	},
+	"active": false,
+	"settings": { "executionOrder": "v1" }
+}

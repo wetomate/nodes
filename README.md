@@ -7,6 +7,7 @@ Wetomate (we + automate) builds services and reusable tooling around [n8n](https
 | Package                      | Directory                                          | Purpose                                                                      |
 | ---------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `@wetomate/n8n-node-toolkit` | [`wetomate-node-toolkit`](./wetomate-node-toolkit) | Shared types and composable parameter-processing utilities for node authors. |
+| `n8n-nodes-duo`              | [`n8n-nodes-duo`](./n8n-nodes-duo)                 | Duo Security authentication operations for n8n workflows.                    |
 
 ## Development
 
@@ -27,6 +28,7 @@ npm run build
 Package-specific commands can be run with npm workspaces, for example:
 
 ```bash
+npm run test --workspace n8n-nodes-duo
 npm run build --workspace @wetomate/n8n-node-toolkit
 ```
 
@@ -35,7 +37,14 @@ See the [project map](./PROJECT_MAP.md) for directory responsibilities, dependen
 
 ### Tests
 
-Run every workspace test from the repository root with `npm test`.
+Run every workspace test from the repository root with `npm test`. To run only the Duo Security package or its workflow-level node suite, use:
+
+```bash
+npm run test --workspace n8n-nodes-duo
+npm run test --workspace n8n-nodes-duo -- DuoSecurity.node.test.ts --runInBand
+```
+
+The Duo node suite executes `.workflow.json` fixtures through an n8n workflow harness. Fixtures keep the expected node output as pinned data, and `nock` mocks Duo API requests, so tests do not require live credentials or network access to Duo.
 
 ## Contributing
 

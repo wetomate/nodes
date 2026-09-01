@@ -1,0 +1,39 @@
+{
+	"name": "Duo Security: ping",
+	"nodes": [
+		{
+			"parameters": {
+				"endpoint": "ping"
+			},
+			"id": "duo-ping",
+			"name": "Duo Ping",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [0, 0],
+			"credentials": {
+				"duoSecurityApi": {
+					"id": "duo-test-credentials",
+					"name": "Duo Test Credentials"
+				}
+			}
+		}
+	],
+	"connections": {},
+	"pinData": {
+		"Duo Ping": [
+			{
+				"json": {
+					"result": {
+						"stat": "OK",
+						"response": { "time": 1724932800 }
+					}
+				},
+				"pairedItem": { "item": 0 }
+			}
+		]
+	},
+	"active": false,
+	"settings": {
+		"executionOrder": "v1"
+	}
+}

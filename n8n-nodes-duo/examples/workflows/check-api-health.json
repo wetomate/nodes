@@ -1,0 +1,81 @@
+{
+	"id": "wetomate-example-duo-authentication-flow",
+	"name": "[Wetomate Example] Duo Authentication Flow",
+	"nodes": [
+		{
+			"parameters": {},
+			"id": "wetomate-example-duo-manual-trigger",
+			"name": "Start Duo Check",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [0, 0]
+		},
+		{
+			"parameters": { "endpoint": "ping" },
+			"id": "wetomate-example-duo-ping",
+			"name": "1. Check Duo Availability",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [240, 0]
+		},
+		{
+			"parameters": {
+				"endpoint": "preauth",
+				"userIdentifier": { "mode": "username", "value": "alice@example.com" },
+				"preAuthOptionalFields": {
+					"clientSupportsVerifiedPush": true,
+					"ipaddr": "192.0.2.10"
+				}
+			},
+			"id": "wetomate-example-duo-preauth",
+			"name": "2. Check User Access",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [480, 0]
+		},
+		{
+			"parameters": {
+				"endpoint": "auth",
+				"userIdentifier": { "mode": "username", "value": "alice@example.com" },
+				"factor": "push",
+				"device": "auto",
+				"pushinfo": {
+					"pairs": [{ "key": "source", "value": "Wetomate n8n workflow" }]
+				},
+				"authOptionalFields": { "async": true, "type": "Workflow sign-in" }
+			},
+			"id": "wetomate-example-duo-auth",
+			"name": "3. Send Duo Push",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [720, 0]
+		},
+		{
+			"parameters": {
+				"endpoint": "auth_status",
+				"txid": "={{ $json.result.response.txid }}"
+			},
+			"id": "wetomate-example-duo-auth-status",
+			"name": "4. Read Authentication Status",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [960, 0]
+		}
+	],
+	"connections": {
+		"Start Duo Check": {
+			"main": [[{ "node": "1. Check Duo Availability", "type": "main", "index": 0 }]]
+		},
+		"1. Check Duo Availability": {
+			"main": [[{ "node": "2. Check User Access", "type": "main", "index": 0 }]]
+		},
+		"2. Check User Access": {
+			"main": [[{ "node": "3. Send Duo Push", "type": "main", "index": 0 }]]
+		},
+		"3. Send Duo Push": {
+			"main": [[{ "node": "4. Read Authentication Status", "type": "main", "index": 0 }]]
+		}
+	},
+	"active": false,
+	"settings": { "executionOrder": "v1" }
+}

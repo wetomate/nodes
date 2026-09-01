@@ -5,7 +5,7 @@
 This repository is becoming `wetomate/nodes`, the home of Wetomate (we + automate) tooling for building n8n integrations. It contains:
 
 - a reusable TypeScript toolkit for creating n8n nodes, published as `@wetomate/n8n-node-toolkit`; and
-- n8n community nodes built primarily on that toolkit.
+- n8n community nodes built primarily on that toolkit, currently including `n8n-nodes-duo`.
 
 Use the Wetomate identity consistently across public names, packages, documentation, imports, lockfiles, and automation.
 

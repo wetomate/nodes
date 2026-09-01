@@ -1,0 +1,68 @@
+{
+	"name": "n8n-nodes-duo",
+	"version": "1.0.0",
+	"description": "Human-in-the-loop-type node for contact with Duo Security",
+	"keywords": [
+		"n8n-community-node-package"
+	],
+	"license": "MIT",
+	"homepage": "https://github.com/wetomate/nodes/tree/main/n8n-nodes-duo#readme",
+	"author": {
+		"name": "Wetomate",
+		"email": "dev@wetomate.de"
+	},
+	"bugs": {
+		"url": "https://github.com/wetomate/nodes/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/wetomate/nodes.git",
+		"directory": "n8n-nodes-duo"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"scripts": {
+		"build": "n8n-node build && node ../configs/build-community-node.mjs",
+		"dev": "tsc --watch",
+		"test": "jest",
+		"format": "prettier --write .",
+		"lint": "n8n-node lint",
+		"lintfix": "n8n-node lint --fix",
+		"prepack": "node ../scripts/validate-community-node-packages.js",
+		"prepublishOnly": "npm run build && npm run lint && npm test"
+	},
+	"files": [
+		"dist",
+		"examples"
+	],
+	"n8n": {
+		"strict": true,
+		"n8nNodesApiVersion": 1,
+		"credentials": [
+			"dist/credentials/DuoSecurityApi.credentials.js"
+		],
+		"nodes": [
+			"dist/nodes/DuoSecurity/DuoSecurity.node.js"
+		]
+	},
+	"devDependencies": {
+		"@n8n/node-cli": "^0.46.4",
+		"@types/jest": "^30.0.0",
+		"@types/node": "^24.0.12",
+		"@wetomate/n8n-node-toolkit": "^1.0.2",
+		"@n8n/di": "^0.10.0",
+		"eslint": "^9.32.0",
+		"jest": "^30.0.5",
+		"jest-mock-extended": "^4.0.0",
+		"n8n-core": "^2.16.0",
+		"n8n-workflow": "^2.16.0",
+		"nock": "^14.0.10",
+		"prettier": "^3.6.2",
+		"ts-jest": "^29.4.1",
+		"typescript": "^5.9.3"
+	},
+	"peerDependencies": {
+		"n8n-workflow": "*"
+	}
+}

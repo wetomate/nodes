@@ -6,6 +6,7 @@ This repository is an npm workspace containing the shared Wetomate toolkit and t
 .
 ├── configs/                    Shared build, lint, test, and formatting defaults
 ├── wetomate-node-toolkit/      Reusable node-building functions and TypeScript types
+├── n8n-nodes-duo/              Duo Security community node package
 ├── scripts/                    Repository-wide validation utilities
 ├── package.json                Workspace membership and repository-wide commands
 └── package-lock.json           Reproducible dependency graph for all workspaces

@@ -1,0 +1,61 @@
+{
+	"name": "Duo Security: authenticate with push",
+	"nodes": [
+		{
+			"parameters": {
+				"endpoint": "auth",
+				"userIdentifier": {
+					"mode": "username",
+					"value": "alice@example.com"
+				},
+				"factor": "push",
+				"device": "auto",
+				"pushinfo": {
+					"pairs": [
+						{
+							"key": "source",
+							"value": "n8n workflow"
+						}
+					]
+				},
+				"authOptionalFields": {
+					"async": true,
+					"ipaddr": "192.0.2.10"
+				}
+			},
+			"id": "duo-auth",
+			"name": "Duo Auth",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [0, 0],
+			"credentials": {
+				"duoSecurityApi": {
+					"id": "duo-test-credentials",
+					"name": "Duo Test Credentials"
+				}
+			}
+		}
+	],
+	"connections": {},
+	"pinData": {
+		"Duo Auth": [
+			{
+				"json": {
+					"result": {
+						"stat": "OK",
+						"response": {
+							"result": "allow",
+							"status": "allow",
+							"status_msg": "Success. Logging you in..."
+						}
+					}
+				},
+				"pairedItem": { "item": 0 }
+			}
+		]
+	},
+	"active": false,
+	"settings": {
+		"executionOrder": "v1"
+	}
+}
