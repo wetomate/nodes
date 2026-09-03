@@ -33,3 +33,7 @@ pnpm-debug.log*
 *.iml
 .DS_Store
 Thumbs.db
+
+
+# Dev Envioronment
+.wetomate-dev-browser/

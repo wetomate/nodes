@@ -1,0 +1,25 @@
+ARG N8N_VERSION=latest
+FROM docker.n8n.io/n8nio/n8n:${N8N_VERSION}
+
+ARG NPM_CONFIG_REGISTRY=https://registry.npmjs.org/
+
+USER root
+
+RUN mkdir -p /workspace/node_modules /home/node/.n8n/custom/node_modules /home/node/.npm \
+	&& chown -R node:node /workspace /home/node/.n8n /home/node/.npm
+
+RUN watcher_version=$(node -p "require('/usr/local/lib/node_modules/n8n/node_modules/@parcel/watcher/package.json').version") \
+	&& bcryptjs_version=$(node -p "require('/usr/local/lib/node_modules/n8n/node_modules/bcryptjs/package.json').version") \
+	&& npm install --prefix /opt/wetomate-dev --registry="$NPM_CONFIG_REGISTRY" --no-audit --no-fund --no-package-lock --omit=dev \
+		"@parcel/watcher@$watcher_version" "bcryptjs@$bcryptjs_version"
+
+COPY --chown=node:node scripts/dev-container-entrypoint.sh /usr/local/bin/wetomate-dev-entrypoint
+RUN chmod 0755 /usr/local/bin/wetomate-dev-entrypoint
+
+USER node
+WORKDIR /workspace
+
+ENV NODE_PATH=/opt/wetomate-dev/node_modules
+
+ENTRYPOINT ["tini", "-g", "--", "/usr/local/bin/wetomate-dev-entrypoint"]
+CMD ["start"]

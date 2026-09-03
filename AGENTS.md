@@ -16,6 +16,7 @@ Use the Wetomate identity consistently across public names, packages, documentat
 - Preserve compatibility unless a breaking change is intentional and documented.
 - Follow the existing TypeScript, ESLint, and Prettier configuration.
 - Work within the affected package and use its npm scripts. Run `npm run build` and, where available, `npm run lint` and `npm test` before finishing.
+- Use `npm run dev:check` for full containerized validation and `npm run dev` when changes must be exercised in the n8n development runtime.
 - Never commit credentials, registry tokens, generated `dist` output, or local `.npmrc` files.
 - After changing the repository, inspect the complete staged, unstaged, and untracked diff and propose an n8n-style commit message. Do not stage, commit, tag, or push unless explicitly requested.
 

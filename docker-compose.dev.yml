@@ -1,0 +1,38 @@
+version: "3.8"
+
+services:
+   n8n:
+      build:
+         context: .
+         dockerfile: Dockerfile.dev
+         args:
+            N8N_VERSION: ${N8N_VERSION:-latest}
+            NPM_CONFIG_REGISTRY: ${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
+      environment:
+         GENERIC_TIMEZONE: ${GENERIC_TIMEZONE:-UTC}
+         N8N_DEV_RELOAD: "true"
+         N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS: "true"
+         N8N_LOG_LEVEL: ${N8N_LOG_LEVEL:-debug}
+         N8N_UNVERIFIED_PACKAGES_ENABLED: "true"
+         NPM_CONFIG_LOGLEVEL: ${NPM_CONFIG_LOGLEVEL:-verbose}
+         NPM_CONFIG_PROGRESS: "true"
+         NPM_CONFIG_REGISTRY: ${NPM_CONFIG_REGISTRY:-https://registry.npmjs.org/}
+         NODE_ENV: development
+         TZ: ${GENERIC_TIMEZONE:-UTC}
+         WETOMATE_N8N_EMAIL: ${WETOMATE_N8N_EMAIL:-dev@wetomate.local}
+         WETOMATE_N8N_FIRST_NAME: ${WETOMATE_N8N_FIRST_NAME:-Wetomate}
+         WETOMATE_N8N_LAST_NAME: ${WETOMATE_N8N_LAST_NAME:-Developer}
+         WETOMATE_N8N_PASSWORD: ${WETOMATE_N8N_PASSWORD:-Wetomate123!}
+         WETOMATE_SEED_SAMPLE_WORKFLOWS: ${WETOMATE_SEED_SAMPLE_WORKFLOWS:-true}
+      ports:
+         - "5678:5678"
+      volumes:
+         - .:/workspace
+         - workspace_node_modules:/workspace/node_modules
+         - npm_cache:/home/node/.npm
+         - n8n_data:/home/node/.n8n
+
+volumes:
+   workspace_node_modules:
+   npm_cache:
+   n8n_data:

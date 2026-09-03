@@ -46,6 +46,58 @@ npm run test --workspace n8n-nodes-duo -- DuoSecurity.node.test.ts --runInBand
 
 The Duo node suite executes `.workflow.json` fixtures through an n8n workflow harness. Fixtures keep the expected node output as pinned data, and `nock` mocks Duo API requests, so tests do not require live credentials or network access to Duo.
 
+Use `npm run dev:check` for the complete containerized test path. It builds the development image, installs the locked workspace dependencies in the Docker volume when needed, then runs dependency validation, lint, Jest tests, and builds for every workspace. The command exits after validation and does not start the n8n editor.
+
+### Docker development environment
+
+Docker and Docker Compose can provide the complete build and n8n runtime without installing Node.js dependencies on the host.
+
+> [!IMPORTANT]
+> Copy `.env.example` to `.env` before the first run and review its local login credentials and runtime settings. The `.env` file is ignored by Git. n8n 2.17.0 or newer applies the configured owner account on every startup, so change the values in `.env` rather than in the editor.
+
+```bash
+cp .env.example .env
+```
+
+| Variable                         | Default                       | Purpose                                                      |
+| -------------------------------- | ----------------------------- | ------------------------------------------------------------ |
+| `N8N_VERSION`                    | `latest`                      | Selects the n8n image version.                               |
+| `GENERIC_TIMEZONE`               | `UTC`                         | Sets the container and n8n timezone.                         |
+| `N8N_LOG_LEVEL`                  | `debug`                       | Controls n8n runtime logging.                                |
+| `NPM_CONFIG_LOGLEVEL`            | `verbose`                     | Controls dependency-install logging.                         |
+| `NPM_CONFIG_REGISTRY`            | `https://registry.npmjs.org/` | Selects the registry used by the image build and `npm ci`.   |
+| `WETOMATE_N8N_EMAIL`             | `dev@wetomate.local`          | Sets the local n8n owner login.                              |
+| `WETOMATE_N8N_FIRST_NAME`        | `Wetomate`                    | Sets the local owner's first name.                           |
+| `WETOMATE_N8N_LAST_NAME`         | `Developer`                   | Sets the local owner's last name.                            |
+| `WETOMATE_N8N_PASSWORD`          | `Wetomate123!`                | Sets the local n8n owner password.                           |
+| `WETOMATE_AUTO_LOGIN`            | `true`                        | Opens Chrome and signs in to the local editor automatically. |
+| `WETOMATE_N8N_URL`               | `http://127.0.0.1:5678`       | URL used by the browser login helper.                        |
+| `WETOMATE_CHROME_PROFILE`        | `.wetomate-dev-browser`       | Dedicated Chrome profile used by the development browser.    |
+| `WETOMATE_CHROME`                | `google-chrome`               | Chrome executable used by the login helper.                  |
+| `WETOMATE_CHROME_DEBUG_PORT`     | `9222`                        | Local Chrome DevTools Protocol port.                         |
+| `WETOMATE_SEED_SAMPLE_WORKFLOWS` | `true`                        | Imports changed sample workflows on startup.                 |
+
+These credentials are intended only for the local development instance. Start it with:
+
+```bash
+npm run dev
+```
+
+With `WETOMATE_AUTO_LOGIN=true`, the command starts a dedicated Chrome profile, opens the editor, and signs in using the configured local owner credentials. Set it to `false` to sign in manually. The default browser executable is `google-chrome`; set `WETOMATE_CHROME` for another Chromium based executable.
+
+The container installs dependencies into a Docker volume, validates dependency versions, lints, tests, builds every workspace, and links every `n8n-nodes-*` package into n8n before serving the editor at <http://localhost:5678>. It also imports inactive workflows from each package's `examples/workflows` directory. Development imports use n8n's `CUSTOM` node namespace while the source examples retain their publishable package node types. A persistent content hash prevents unchanged examples from being imported repeatedly. n8n data and the npm cache persist in separate Docker volumes.
+
+While `npm run dev` is running, changes to node or credential TypeScript, JSON metadata, and PNG or SVG icons rebuild the affected package automatically. Changes to a package's `examples/workflows/*.json` file are validated and hot imported as inactive workflows. n8n's development reloader then refreshes the node descriptions without restarting the container. Toolkit source changes rebuild the toolkit and every community node. Use `npm run dev:restart` to recover after a watcher or build failure, open a prepared container shell with `npm run dev:shell`, and stop the environment with `npm run dev:down`.
+
+To force the sample workflows to be imported again, stop the environment and run:
+
+```bash
+npm run dev:down
+npm run dev:seed
+```
+
+Set `WETOMATE_SEED_SAMPLE_WORKFLOWS=false` in `.env` to disable automatic imports. Sample workflows use stable IDs, remain inactive, and don't contain credentials; select or create the required credentials in the editor before executing them.
+
 ## Contributing
 
 Issues and pull requests are welcome. Read [CONTRIBUTING.md](./CONTRIBUTING.md) and the [Code of Conduct](./CODE_OF_CONDUCT.md) before contributing. Build and test every affected package, document public behavior changes, and never commit credentials or local `.npmrc` files. Report vulnerabilities through the private process in [SECURITY.md](./SECURITY.md).

@@ -8,6 +8,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### Added
 
+- Automatic, idempotent sample workflow imports and live community-node rebuilding for the Docker development environment.
 - Added the `$wetomate-n8n-verification` repository skill for evidence-based verified community node compatibility audits.
 - Repository guidance, project skills, contribution guidelines, security reporting, and community standards.
 

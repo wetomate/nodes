@@ -11,6 +11,13 @@
 	"scripts": {
 		"build": "npm run build --workspaces --if-present",
 		"check:packages": "node scripts/validate-community-node-packages.js",
+		"dev": "sh scripts/dev-environment.sh up",
+		"dev:check": "sh scripts/dev-environment.sh check",
+		"dev:down": "sh scripts/dev-environment.sh down",
+		"dev:restart": "sh scripts/dev-environment.sh restart",
+		"dev:seed": "sh scripts/dev-environment.sh seed",
+		"dev:shell": "sh scripts/dev-environment.sh shell",
+		"dev:watch": "node scripts/watch-community-node-packages.js",
 		"lint": "npm run lint --workspaces --if-present",
 		"test": "npm run test:scripts && npm run test --workspaces --if-present",
 		"test:scripts": "node --test scripts/*.test.js"

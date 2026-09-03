@@ -8,6 +8,8 @@ This repository is an npm workspace containing the shared Wetomate toolkit and t
 ├── wetomate-node-toolkit/      Reusable node-building functions and TypeScript types
 ├── n8n-nodes-duo/              Duo Security community node package
 ├── scripts/                    Repository-wide validation utilities
+├── Dockerfile.dev              n8n-based development image
+├── docker-compose.dev.yml      Development runtime, source mounts, and persistent volumes
 ├── package.json                Workspace membership and repository-wide commands
 └── package-lock.json           Reproducible dependency graph for all workspaces
 ```
@@ -35,6 +37,28 @@ the toolkit and package implementation dependencies into the generated JavaScrip
 while keeping published community nodes free of runtime dependencies. `npm run check:packages` enforces the toolkit
 range, peer dependency, runtime dependency, and registered-source rules, and node packages run the same check before
 packing.
+
+## Docker development environment
+
+`Dockerfile.dev` extends the official n8n image. `docker-compose.dev.yml` bind-mounts the repository at `/workspace` and
+keeps container dependencies, the npm cache, and n8n state in named volumes. The development entry point checks and
+builds all workspaces, symlinks every `n8n-nodes-*` package into n8n's default `/home/node/.n8n/custom/node_modules`
+directory, imports changed `examples/workflows/*.json` files, and starts the community-node source watcher before n8n
+starts.
+
+Sample workflows belong to their provider package under `n8n-nodes-*/examples/workflows` and are included in the
+published package. They use stable workflow and node IDs, remain inactive, and never contain credential references. The
+entry point aggregates and validates them, rewrites package node types to n8n's `CUSTOM` namespace only in the temporary
+development import, then records a content hash in the persistent n8n data volume so unchanged samples aren't imported
+again.
+
+Use the root `dev:*` npm scripts to operate the environment. Source remains on the host, but dependencies stay in the
+container so native packages match the n8n image. The watcher rebuilds an affected node package when its node,
+credential, metadata, or icon source changes; toolkit changes rebuild every node package. A companion watcher validates
+and hot imports changed `examples/workflows/*.json` files as inactive workflows. n8n's development hot reload observes
+the generated `dist` files. Restarting the service repeats validation, compilation, linking, and the idempotent sample
+check against the current repository source. Use `npm run dev:seed` while the main container is stopped to force a
+sample re-import.
 
 ## Shared configuration
 
