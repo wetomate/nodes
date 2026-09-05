@@ -1,7 +1,7 @@
 # n8n-nodes-duo
 
 > A Wetomate n8n community node for the Duo Security multi-factor authentication API.
-> This package provides a set of endpoints to interact with Duo Security, enabling you to perform authentication, pre-authentication, status checks, and more, directly within your n8n workflows.
+> This package provides authentication, pre-authentication, status checks, and availability checks directly within n8n workflows.
 
 ## Prerequisites
 
@@ -20,7 +20,7 @@ Install the community package from your n8n instance's **Settings > Community No
 n8n-nodes-duo
 ```
 
-## Credential Setup
+## Credential setup
 
 Create a new Duo credential in n8n with these fields:
 
@@ -29,32 +29,30 @@ Create a new Duo credential in n8n with these fields:
 - **API Hostname**
 
 Use this credential in all Duo node endpoints.
-Click [here](https://duo.com/docs/authapi) to view Duo Security Documentions.
+See the [Duo Auth API documentation](https://duo.com/docs/authapi) for integration setup and endpoint details.
 
-## Available Endpoints
+## Supported endpoints
 
-| Endpoints              | Description                                                                                                                                                                                                                                                          |
-| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/auth/v2/auth`        | Performs second-factor authentication for a user by sending a push notification to the user's smartphone app, verifying a passcode, or placing a phone call. It is also used to send the user a new batch of passcodes via SMS.                                      |
-| `/auth/v2/preauth`     | determines whether a user is authorized to log in, and (if so) returns the user's available authentication factors.                                                                                                                                                  |
-| `/auth/v2/auth_status` | "long-polls" for the next status update from the authentication process for a given transaction. That is to say, if no status update is available at the time the request is sent, it will wait until there is an update before returning a response.                |
-| `/auth/v2/check`       | can be called to verify that the Auth API integration and secret keys are valid, and that the signature is being generated properly.                                                                                                                                 |
-| `/auth/v2/logo`        | provides a programmatic way to retrieve your stored logo.                                                                                                                                                                                                            |
-| `/auth/v2/ping`        | acts as a "liveness check" that can be called to verify that Duo is up before trying to call other Auth API endpoints. Unlike the other endpoints, this one does not have to be signed with the [Authorization header](https://duo.com/docs/authapi#authentication). |
+| Endpoint               | Description                                                                                                           |
+| ---------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| `/auth/v2/auth`        | Starts second-factor authentication with a push notification, passcode, phone call, or SMS passcode delivery.        |
+| `/auth/v2/auth_status` | Waits for the next status update from an asynchronous authentication transaction.                                     |
+| `/auth/v2/ping`        | Checks whether the Duo Auth API is available without requiring a signed request.                                      |
+| `/auth/v2/preauth`     | Checks whether a user may authenticate and returns the authentication factors available to that user.                |
 
-Each endpoints accepts input parameters and returns JSON output.
+Each operation accepts input parameters and returns JSON output.
 
-## Development & Testing
+## Development and testing
 
 When the repository Docker development environment starts, it imports the inactive [`Duo Authentication Flow`](./examples/workflows/check-api-health.json) and [`Duo Human-in-the-Loop Approval`](./examples/workflows/duo-human-in-the-loop-approval.json) sample workflows. The authentication example demonstrates availability checking, user pre-authentication, an asynchronous push request, and transaction status polling. The approval example adds an event webhook, contextual `pushinfo`, a synchronous push approval, an allow/deny gate, and an action HTTP request; its brainstorming board is documented in [`duo-human-in-the-loop-approval.md`](./examples/workflows/duo-human-in-the-loop-approval.md). Both workflows intentionally omit credentials. Create or select a Duo credential and use test users and endpoints before running them; the push and approved action steps have real effects.
 
-- Written in TypeScript (or JavaScript depending on your setup)
-- Run tests with:
+From the repository root, install the locked dependencies and run the Duo package checks with:
 
 ```bash
-npm install
-npm run build
-npm run test
+npm ci
+npm run build --workspace n8n-nodes-duo
+npm run lint --workspace n8n-nodes-duo
+npm test --workspace n8n-nodes-duo
 ```
 
 ## Linting
@@ -62,7 +60,7 @@ npm run test
 Linting helps ensure code quality, consistency, and prevents common errors.  
 This project uses **ESLint** (and optionally **Prettier** for formatting) to maintain a consistent code style.
 
-### Run Linter
+### Run the linter
 
 ```bash
 npm run lint

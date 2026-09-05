@@ -1,0 +1,82 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    name: Publish release package
+    runs-on: ubuntu-latest
+    steps:
+      - name: Select package from release tag
+        id: package
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          case "$RELEASE_TAG" in
+            toolkit-v*)
+              echo "directory=wetomate-node-toolkit" >> "$GITHUB_OUTPUT"
+              echo "version=${RELEASE_TAG#toolkit-v}" >> "$GITHUB_OUTPUT"
+              ;;
+            n8n-nodes-duo-v*)
+              echo "directory=n8n-nodes-duo" >> "$GITHUB_OUTPUT"
+              echo "version=${RELEASE_TAG#n8n-nodes-duo-v}" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "Unsupported release tag: $RELEASE_TAG" >&2
+              echo "Use toolkit-v<version> or n8n-nodes-duo-v<version>." >&2
+              exit 1
+              ;;
+          esac
+
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js and npm registry
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Use an OIDC-capable npm version
+        run: npm install --global npm@11
+
+      - name: Verify release version
+        env:
+          PACKAGE_DIRECTORY: ${{ steps.package.outputs.directory }}
+          RELEASE_VERSION: ${{ steps.package.outputs.version }}
+        run: |
+          PACKAGE_VERSION="$(node -p "require('./${PACKAGE_DIRECTORY}/package.json').version")"
+          if [ "$PACKAGE_VERSION" != "$RELEASE_VERSION" ]; then
+            echo "Release tag version $RELEASE_VERSION does not match package version $PACKAGE_VERSION." >&2
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build packages
+        run: npm run build
+
+      - name: Lint packages
+        run: npm run lint
+
+      - name: Test packages
+        run: npm test
+
+      - name: Check package contents
+        working-directory: ${{ steps.package.outputs.directory }}
+        run: npm pack --dry-run
+
+      - name: Publish package with provenance
+        working-directory: ${{ steps.package.outputs.directory }}
+        run: npm publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

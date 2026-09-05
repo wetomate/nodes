@@ -6,18 +6,24 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+## @wetomate/n8n-node-toolkit 1.0.2 - 2026-09-06
+
 ### Added
 
-- Automatic, idempotent sample workflow imports and live community-node rebuilding for the Docker development environment.
-- Added the `$wetomate-n8n-verification` repository skill for evidence-based verified community node compatibility audits.
-- Repository guidance, project skills, contribution guidelines, security reporting, and community standards.
+- First public release of the shared Wetomate toolkit for building n8n community nodes.
+- Composable parameter-mapping rules for renaming, omitting, and transforming node values.
 
 ### Changed
 
-- Added composable parameter-mapping rules to `@wetomate/n8n-node-toolkit` and migrated the Duo node away from custom `INodeProperties` extensions while retaining deprecated compatibility exports.
-- Renamed the shared toolkit package to `@wetomate/n8n-node-toolkit` and aligned repository terminology with Wetomate.
-- Consolidated package dependency management into npm workspaces.
-- Added manifest-driven community-node bundling and package validation, allowing `n8n-nodes-duo` to reuse the toolkit without external runtime dependencies.
+- Retained the earlier custom property types as deprecated compatibility exports while standardizing new integrations on n8n's `INodeProperties` type.
+
+## n8n-nodes-duo 1.0.0 - 2026-09-06
+
+### Added
+
+- First public release of the Duo Security community node for n8n.
+- Authentication, asynchronous authentication status, pre-authentication, and availability operations for the Duo Auth API.
+- Example workflows for API health checks and human approval flows.
 
 ### Fixed
 

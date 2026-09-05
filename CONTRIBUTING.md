@@ -16,9 +16,9 @@ Node.js 22 or newer and npm are required. From the repository root:
 
 ```bash
 npm ci
+npm run build
 npm run lint
 npm test
-npm run build
 ```
 
 Keep reusable node-building abstractions in `wetomate-node-toolkit`. Keep provider-specific behavior in its `n8n-nodes-*` package. Preserve existing workflows unless a breaking change is intentional, documented, and accompanied by migration guidance.

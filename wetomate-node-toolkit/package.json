@@ -11,7 +11,8 @@
       "prepublishOnly": "npm run build && npm test"
    },
    "files": [
-      "dist"
+      "dist",
+      "!dist/**/*.tsbuildinfo"
    ],
    "keywords": [
       "n8n",
@@ -22,7 +23,8 @@
    ],
    "license": "MIT",
    "author": {
-      "name": "Wetomate"
+      "name": "Wetomate",
+      "email": "dev@wetomate.de"
    },
    "homepage": "https://github.com/wetomate/nodes#readme",
    "bugs": {

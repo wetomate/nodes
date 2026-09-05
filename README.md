@@ -20,16 +20,16 @@ npm ci
 Run the repository checks with:
 
 ```bash
+npm run build
 npm run lint
 npm test
-npm run build
 ```
 
 Package-specific commands can be run with npm workspaces, for example:
 
 ```bash
-npm run test --workspace n8n-nodes-duo
 npm run build --workspace @wetomate/n8n-node-toolkit
+npm run test --workspace n8n-nodes-duo
 ```
 
 Keep reusable node-building behavior in the toolkit and provider-specific behavior in the relevant node package.
@@ -97,6 +97,21 @@ npm run dev:seed
 ```
 
 Set `WETOMATE_SEED_SAMPLE_WORKFLOWS=false` in `.env` to disable automatic imports. Sample workflows use stable IDs, remain inactive, and don't contain credentials; select or create the required credentials in the editor before executing them.
+
+## Continuous integration
+
+GitHub Actions builds, lints, tests, and inspects every npm package on pull requests and pushes to `main`.
+
+## Releases
+
+Publishing is triggered by publishing a GitHub release. The release tag selects exactly one package and its version must match that package's `package.json`:
+
+- `toolkit-v1.2.3` publishes `@wetomate/n8n-node-toolkit@1.2.3`.
+- `n8n-nodes-duo-v1.2.3` publishes `n8n-nodes-duo@1.2.3`.
+
+Before publishing a release, update the package version and any internal development dependency ranges, commit the resulting lockfile, and make sure CI passes. The shared community-node build derives entry points from each package's `n8n` metadata and bundles the toolkit into generated JavaScript, so installing a published node does not install the toolkit at runtime. Publish a new toolkit release before building a node from outside this workspace against that version.
+
+The npm packages should configure `wetomate/nodes` and the `publish.yml` workflow as their npm trusted publisher. The workflow uses GitHub OIDC and publishes provenance; an `NPM_TOKEN` repository secret can be used as a fallback.
 
 ## Contributing
 

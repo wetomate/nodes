@@ -1,9 +1,14 @@
 {
 	"name": "n8n-nodes-duo",
 	"version": "1.0.0",
-	"description": "Human-in-the-loop-type node for contact with Duo Security",
+	"description": "Duo Security multi-factor authentication community node for n8n",
 	"keywords": [
-		"n8n-community-node-package"
+		"n8n-community-node-package",
+		"n8n",
+		"duo",
+		"duo-security",
+		"mfa",
+		"authentication"
 	],
 	"license": "MIT",
 	"homepage": "https://github.com/wetomate/nodes/tree/main/n8n-nodes-duo#readme",
