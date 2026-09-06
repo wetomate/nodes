@@ -7,6 +7,7 @@ This repository is an npm workspace containing the shared Wetomate toolkit and t
 ├── configs/                    Shared build, lint, test, and formatting defaults
 ├── wetomate-node-toolkit/      Reusable node-building functions and TypeScript types
 ├── n8n-nodes-duo/              Duo Security community node package
+├── n8n-nodes-rest-api/         REST API trigger and AJV validation package
 ├── .github/workflows/          Repository validation and npm publishing automation
 ├── scripts/                    Repository-wide validation utilities
 ├── Dockerfile.dev              n8n-based development image

@@ -6,6 +6,14 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+### Added
+
+- Added `n8n-nodes-rest-api`, a Webhook-compatible REST API trigger with visual and custom JSON Schema validation powered by AJV.
+
+### Fixed
+
+- Fixed REST API node and credential icons, and registered package-owned authentication credentials so they work when n8n loads the node from a custom directory.
+
 ## @wetomate/n8n-node-toolkit 1.0.2 - 2026-09-06
 
 ### Added

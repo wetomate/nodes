@@ -86,15 +86,15 @@ describe("community node development watcher", () => {
 	it("ignores generated files while watching package roots", () => {
 		for (const fileName of [
 			"package.json",
-			"nodes/Example/Example.node.ts",
-			"credentials/ExampleHeaderAuthApi.credentials.ts",
-			"nodes/Example/example.svg",
+			"nodes/RestApi/RestApi.node.ts",
+			"credentials/RestApiHeaderAuthApi.credentials.ts",
+			"nodes/RestApi/rest-api.svg",
 		]) {
 			assert.equal(isWatchedPackagePath(fileName), true, fileName);
 		}
 
 		for (const fileName of [
-			"dist/nodes/Example.node.js",
+			"dist/nodes/RestApi.node.js",
 			"README.md",
 			"examples/workflows/example.json",
 		]) {

@@ -8,6 +8,7 @@ Wetomate (we + automate) builds services and reusable tooling around [n8n](https
 | ---------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------- |
 | `@wetomate/n8n-node-toolkit` | [`wetomate-node-toolkit`](./wetomate-node-toolkit) | Shared types and composable parameter-processing utilities for node authors. |
 | `n8n-nodes-duo`              | [`n8n-nodes-duo`](./n8n-nodes-duo)                 | Duo Security authentication operations for n8n workflows.                    |
+| `n8n-nodes-rest-api`         | [`n8n-nodes-rest-api`](./n8n-nodes-rest-api)       | REST API trigger with AJV JSON Schema request validation.                    |
 
 ## Development
 
@@ -30,6 +31,7 @@ Package-specific commands can be run with npm workspaces, for example:
 ```bash
 npm run build --workspace @wetomate/n8n-node-toolkit
 npm run test --workspace n8n-nodes-duo
+npm test --workspace n8n-nodes-rest-api
 ```
 
 Keep reusable node-building behavior in the toolkit and provider-specific behavior in the relevant node package.
@@ -108,6 +110,7 @@ Publishing is triggered by publishing a GitHub release. The release tag selects 
 
 - `toolkit-v1.2.3` publishes `@wetomate/n8n-node-toolkit@1.2.3`.
 - `n8n-nodes-duo-v1.2.3` publishes `n8n-nodes-duo@1.2.3`.
+- `n8n-nodes-rest-api-v1.2.3` publishes `n8n-nodes-rest-api@1.2.3`.
 
 Before publishing a release, update the package version and any internal development dependency ranges, commit the resulting lockfile, and make sure CI passes. The shared community-node build derives entry points from each package's `n8n` metadata and bundles the toolkit into generated JavaScript, so installing a published node does not install the toolkit at runtime. Publish a new toolkit release before building a node from outside this workspace against that version.
 

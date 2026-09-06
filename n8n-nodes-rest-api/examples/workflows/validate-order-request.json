@@ -1,0 +1,37 @@
+{
+	"id": "wetomate-example-rest-api-validate-order",
+	"name": "[Wetomate Example] Validate REST Order Request",
+	"nodes": [
+		{
+			"parameters": {
+				"httpMethod": "POST",
+				"path": "wetomate/examples/orders",
+				"authentication": "none",
+				"responseMode": "onReceived",
+				"validateBody": true,
+				"schemaSource": "json",
+				"jsonSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"orderId\", \"email\"],\n  \"properties\": {\n    \"orderId\": { \"type\": \"integer\", \"minimum\": 1 },\n    \"email\": { \"type\": \"string\", \"format\": \"email\" }\n  }\n}",
+				"ajvOptions": {
+					"allErrors": true,
+					"validateFormats": true
+				},
+				"validationErrorCode": 400,
+				"options": {
+					"responseCode": 202,
+					"responseContentType": "application/json",
+					"responseData": "{\"accepted\":true}"
+				}
+			},
+			"id": "wetomate-example-rest-api-trigger",
+			"name": "Validate Order Request",
+			"type": "n8n-nodes-rest-api.restApi",
+			"typeVersion": 1,
+			"position": [0, 0]
+		}
+	],
+	"connections": {},
+	"active": false,
+	"settings": {
+		"executionOrder": "v1"
+	}
+}

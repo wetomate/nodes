@@ -44,3 +44,7 @@ jobs:
       - name: Check Duo package contents
         working-directory: n8n-nodes-duo
         run: npm pack --dry-run
+
+      - name: Check REST API package contents
+        working-directory: n8n-nodes-rest-api
+        run: npm pack --dry-run
