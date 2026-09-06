@@ -13,6 +13,7 @@ For each release:
 - Keep package names, internal dependency ranges, lockfiles, documentation, and CI/release configuration consistent.
 - Confirm that published files contain the compiled entry points, type declarations, icons, and n8n registrations they advertise, without source-only secrets or local configuration.
 - Run a clean install where practical, then the package's tests, lint, build, and `npm pack --dry-run` or equivalent package-content check.
+- Before publishing an n8n community-node package, run `npx @n8n/scan-community-package@beta <package-name>@<published-version>` against its current npm release. Inspect the result instead of relying only on the exit status, compare reported findings with the release candidate, and block publication while any finding remains. The scanner fetches packages from npm, so for a first release report that this check is not applicable; do not treat registry, network, provenance, or scanner failures as a pass.
 - Report the planned package order, versions, and validation results before publication.
 
 Publishing, pushing commits or tags, and creating GitHub releases are external mutations. Perform them only when the user explicitly asks, and stop on authentication, ownership, registry, or version conflicts rather than changing the release target implicitly.

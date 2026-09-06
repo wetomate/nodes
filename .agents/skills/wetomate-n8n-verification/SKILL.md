@@ -57,7 +57,7 @@ npm pack --dry-run --workspace <package-name>
 
 Run `npm run dev:check` after verification-related implementation or shared-configuration changes. Run configured `n8n-node` lint/build commands when the package provides them.
 
-Use `npx @n8n/scan-community-package <package-name>@<published-version>` only for a version that exists on npm. Distinguish registry, network, or scanner failures from actual findings; a tool failure is not a pass or a verification rejection.
+Before publishing a new version, run `npx @n8n/scan-community-package@beta <package-name>@<published-version>` against the package's current npm release. Inspect the result instead of relying only on the exit status, then compare any findings with the release candidate. The scanner cannot inspect an unpublished version; report it as not applicable for a first release. Distinguish registry, network, provenance, or scanner failures from actual findings; a tool failure is not a pass or a verification rejection.
 
 Inspect the produced tarball listing, not only the source manifest. Search source for environment, file-system, logging, credential, and external import risks. Do not expose secrets while auditing.
 

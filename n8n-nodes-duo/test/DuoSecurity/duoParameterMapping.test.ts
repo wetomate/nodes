@@ -1,6 +1,6 @@
 import type { IExecuteFunctions } from 'n8n-workflow';
 
-import { mapDuoParameters } from '../V1/duoParameterMapping';
+import { mapDuoParameters } from '../../nodes/DuoSecurity/V1/duoParameterMapping';
 
 function executionContext(values: Record<string, unknown>): IExecuteFunctions {
 	return {

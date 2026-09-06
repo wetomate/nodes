@@ -6,6 +6,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ## Unreleased
 
+## n8n-nodes-duo 1.0.1 - 2026-09-06
+
+### Changed
+
+- Moved Duo tests to the package-level test directory so they are kept outside the published node source tree.
+
 ## @wetomate/n8n-node-toolkit 1.0.2 - 2026-09-06
 
 ### Added

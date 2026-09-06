@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-duo",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Duo Security multi-factor authentication community node for n8n",
 	"keywords": [
 		"n8n-community-node-package",

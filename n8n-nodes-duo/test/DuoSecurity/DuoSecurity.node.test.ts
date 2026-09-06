@@ -4,8 +4,8 @@ import { join } from 'node:path';
 
 import nock from 'nock';
 
-import { DuoSecurityApi } from '../../../credentials/DuoSecurityApi.credentials';
-import { DuoSecurity } from '../DuoSecurity.node';
+import { DuoSecurityApi } from '../../credentials/DuoSecurityApi.credentials';
+import { DuoSecurity } from '../../nodes/DuoSecurity/DuoSecurity.node';
 import { NodeTestHarness } from './NodeTestHarness';
 
 const credentials = {
@@ -53,7 +53,7 @@ describe('Duo Security node', () => {
 	});
 
 	it('uses a square SVG canvas for the node icon', () => {
-		const icon = readFileSync(join(__dirname, '..', 'duo.svg'), 'utf8');
+		const icon = readFileSync(join(__dirname, '../../nodes/DuoSecurity/duo.svg'), 'utf8');
 
 		expect(icon).toMatch(/viewBox="0 0 211\.1 211\.1"/);
 	});

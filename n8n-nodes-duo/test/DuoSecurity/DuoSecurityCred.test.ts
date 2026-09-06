@@ -1,7 +1,7 @@
-import { signV5 } from '../../../credentials/DuoSecurityApi.credentials';
+import { signV5 } from '../../credentials/DuoSecurityApi.credentials';
 
 describe('sigV5', () => {
-	it('V5 signature', function (done) {
+	it('V5 signature', () => {
 		const ikey = 'test_ikey';
 		const skey = 'test_skey';
 		const method = 'POST';
@@ -21,6 +21,5 @@ describe('sigV5', () => {
 		const auth = signV5(ikey, skey, method, host, path, params, date, body);
 
 		expect(auth).toEqual(exp_sig);
-		done();
 	});
 });

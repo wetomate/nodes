@@ -15,7 +15,7 @@ type Workflow = {
 	connections: Record<string, Record<string, unknown>>;
 };
 
-const examplesDirectory = join(__dirname, '../../../examples/workflows');
+const examplesDirectory = join(__dirname, '../../examples/workflows');
 
 function readExample(fileName: string): Workflow {
 	return JSON.parse(readFileSync(join(examplesDirectory, fileName), 'utf8')) as Workflow;
