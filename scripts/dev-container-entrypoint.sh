@@ -20,8 +20,11 @@ install_dependencies() {
 		# The base n8n image already provides its native runtime modules. The
 		# workspace install only needs the node tooling and package dependencies;
 		# skipping lifecycle scripts avoids rebuilding optional native modules such
-		# as isolated-vm inside the minimal Alpine development image.
-		npm ci --include=dev --ignore-scripts --no-audit --no-fund
+		# as isolated-vm inside the minimal Alpine development image. Use install
+		# here because the persistent Docker volume already contains most of the
+		# dependency tree; npm ci needlessly rebuilds the full workspace and can
+		# prevent n8n from reaching its startup command.
+		npm install --include=dev --ignore-scripts --no-audit --no-fund --prefer-offline
 		printf '%s\n' "$lock_hash" > "$dependency_marker"
 	fi
 }

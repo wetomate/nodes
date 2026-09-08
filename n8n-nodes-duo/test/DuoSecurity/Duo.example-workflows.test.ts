@@ -35,14 +35,17 @@ describe('Duo example workflows', () => {
 			const nodeNames = new Set(workflow.nodes.map((node) => node.name));
 
 			expect(workflow.active).toBe(false);
-			expect(workflow.nodes.some((node) => node.type === 'n8n-nodes-duo.duoSecurity')).toBe(true);
+			expect(workflow.nodes.some((node) => node.type === 'n8n-nodes-duo.duoSecurity')).toBe(
+				true,
+			);
 			expect(workflow.nodes.every((node) => node.credentials === undefined)).toBe(true);
 
 			for (const [source, outputs] of Object.entries(workflow.connections)) {
 				expect(nodeNames.has(source)).toBe(true);
 				for (const branches of Object.values(outputs)) {
 					for (const branch of branches as Array<Array<{ node: string }>>) {
-						for (const connection of branch) expect(nodeNames.has(connection.node)).toBe(true);
+						for (const connection of branch)
+							expect(nodeNames.has(connection.node)).toBe(true);
 					}
 				}
 			}
@@ -61,26 +64,52 @@ describe('Duo example workflows', () => {
 		]);
 	});
 
-	it('carries approval context into a synchronous Duo Push before the action gate', () => {
+	it('carries expense context into a synchronous Duo Push before the approval gate', () => {
 		const workflow = readExample('duo-human-in-the-loop-approval.json');
-		const approval = nodeByName(workflow, 'Request Administrator Approval');
-		const pushInfo = approval.parameters.pushinfo as { pairs: Array<{ key: string; value: string }> };
+		const context = nodeByName(workflow, 'Set Approval Context');
+		const approval = nodeByName(workflow, 'Request Manager Approval');
+		const pushInfo = approval.parameters.pushinfo as {
+			pairs: Array<{ key: string; value: string }>;
+		};
 
+		expect(context.parameters.includeOtherFields).toBe(true);
 		expect(approval.parameters.endpoint).toBe('auth');
 		expect(approval.parameters.factor).toBe('push');
 		expect(approval.parameters.authOptionalFields).toEqual(
 			expect.objectContaining({ async: false }),
 		);
-		expect(pushInfo.pairs.map((pair) => pair.key)).toEqual(['event', 'action', 'target']);
+		expect(pushInfo.pairs.map((pair) => pair.key)).toEqual([
+			'expense',
+			'employee',
+			'amount',
+			'description',
+		]);
+		expect(pushInfo.pairs.map((pair) => pair.value)).toEqual([
+			"={{ $('Set Approval Context').item.json['Expense reference'] }}",
+			"={{ $('Set Approval Context').item.json['Employee name'] }}",
+			"={{ $('Set Approval Context').item.json.Amount }} {{ $('Set Approval Context').item.json.Currency }}",
+			"={{ $('Set Approval Context').item.json['Expense description'] }}",
+		]);
 		expect(workflow.nodes.map((node) => node.name)).toEqual(
 			expect.arrayContaining([
-				'Event Trigger',
-				'Check Administrator Access',
-				'Request Administrator Approval',
-				'Approved?',
-				'Execute Approved Action',
-				'Record Denied Approval',
+				'Expense Request Form',
+				'Check Manager Access',
+				'Request Manager Approval',
+				'Manager Approved?',
+				'Mark Expense Approved',
+				'Record Expense Rejection',
+				'Main workflow overview',
+				'Request and preserve input',
+				'Check and request Duo approval',
+				'Route the decision',
 			]),
 		);
+
+		const stickyNotes = workflow.nodes.filter(
+			(node) => node.type === 'n8n-nodes-base.stickyNote',
+		);
+		expect(stickyNotes).toHaveLength(4);
+		expect(stickyNotes[0].parameters.color).toBe(5);
+		expect(stickyNotes.slice(1).every((note) => note.parameters.color === 7)).toBe(true);
 	});
 });

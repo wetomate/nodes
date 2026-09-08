@@ -1,49 +1,43 @@
-# Duo human-in-the-loop approval board
+# Duo expense reimbursement approval
 
-## Core idea
+## Quick overview
 
-An event asks for a sensitive action. n8n sends the administrator a synchronous Duo Push with enough context to make a decision. The action endpoint is called only after Duo immediately reports `allow`.
+Collect an expense request, ask the manager for approval with Duo Push, and route the result to an approved or rejected outcome.
 
-```text
-Event Trigger
-      |
-      v
-Check administrator access
-      |
-      v
-Request synchronous Duo Push
-  (event, action, target in pushinfo)
-      |
-      v
-    Approved?
-   /         \
- allow       deny / timeout
-  /                 \
-Execute action      Record rejection
-```
+## How it works
 
-## Event contract
+1. The form collects the employee, expense description, amount, currency, date, and reference. Visible labels become the n8n output keys.
+2. Set Approval Context preserves those submitted fields and adds the trusted manager username.
+3. Check Manager Access calls Duo PREAUTH to check the manager account and available factors.
+4. Request Manager Approval sends a synchronous Duo Push with safe expense context: reference, employee, amount, currency, and description.
+5. Manager Approved? checks for an explicit Duo `allow` result and selects the approved or rejected branch.
+6. Replace the outcome nodes with the finance, payroll, notification, or audit action used by your organization.
 
-The webhook expects a JSON body containing:
+## Requirements
 
-```json
-{
-	"eventId": "change-123",
-	"action": "restart-service",
-	"target": "payments-api",
-	"actionUrl": "https://automation.example.test/actions/restart",
-	"requestedBy": "release-bot",
-	"adminUsername": "admin@example.com",
-	"sourceIp": "192.0.2.20"
-}
-```
+- A Duo Security Auth API application and credential.
+- An enrolled Duo manager account.
+- n8n with the Duo community node installed.
+- A safe test expense and test finance destination.
 
-## Questions for the next iteration
+## Setup
 
-- Should a denied or expired request notify the requester?
-- Should the workflow persist the approval decision and Duo transaction ID for audit?
-- Should the action URL be selected from an allowlisted action map instead of accepted from the event?
-- Should approvals require two administrators for high impact actions?
-- Should high impact actions use async authentication and poll `auth_status` instead?
+1. Import the workflow and create a Duo Security credential with the Auth API integration key, secret key, and hostname.
+2. Open Set Approval Context and replace `manager@example.com` with a trusted Duo username. Use a trusted employee-to-manager lookup in a real process.
+3. Open the form URL and submit a non-production expense so the manager receives the Duo Push.
+4. Confirm that Push Info contains only safe context, then approve or deny the request in Duo Mobile.
+5. Replace the approved and rejected outcome nodes with your finance, payroll, notification, and audit actions before activation.
 
-The imported workflow is inactive and intentionally has no credential references. Create a Duo credential, replace the administrator username, and point `actionUrl` at a safe test endpoint before enabling it. The approved branch performs a real HTTP POST.
+## Inputs
+
+The form uses its visible labels as keys:
+
+    Employee name, Employee email, Expense description, Amount, Currency, Expense date, Expense reference
+
+## Outputs
+
+The branches add `status` (`approved` or `denied`) and `nextAction`. Preserve the original request fields when connecting finance or audit systems.
+
+## Additional info
+
+The workflow is inactive and uses a placeholder manager. Keep Push Info concise and exclude receipts, payment card details, credentials, tokens, and other secrets.
