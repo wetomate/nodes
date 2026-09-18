@@ -42,6 +42,14 @@ case "${1:-up}" in
 		stop_browser
 		compose down
 		;;
+	clean)
+		stop_browser
+		compose down
+		project_name=${COMPOSE_PROJECT_NAME:-$(basename "$repository_root")}
+		n8n_data_volume="${project_name}_n8n_data"
+		echo "Removing development n8n data volume: $n8n_data_volume"
+		docker volume rm "$n8n_data_volume" >/dev/null 2>&1 || true
+		;;
 	restart)
 		compose restart n8n
 		;;
@@ -84,7 +92,7 @@ case "${1:-up}" in
 		docker logs -f "$container_id"
 		;;
 	*)
-		echo "Usage: $0 [up|check|restart|seed|shell|down]" >&2
+		echo "Usage: $0 [up|check|clean|restart|seed|shell|down]" >&2
 		exit 2
 		;;
 esac

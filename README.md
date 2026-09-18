@@ -98,6 +98,15 @@ npm run dev:seed
 
 Set `WETOMATE_SEED_SAMPLE_WORKFLOWS=false` in `.env` to disable automatic imports. Sample workflows use stable IDs, remain inactive, and don't contain credentials; select or create the required credentials in the editor before executing them.
 
+To remove stale development workflows and reset only the n8n development state, run:
+
+```bash
+npm run dev:clean
+npm run dev
+```
+
+This removes the project `n8n_data` volume, including local workflows, credentials, executions, and the development user. The dependency and npm cache volumes are preserved.
+
 ## Continuous integration
 
 GitHub Actions builds, lints, tests, and inspects every npm package on pull requests and pushes to `main`.

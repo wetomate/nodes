@@ -59,7 +59,7 @@ credential, metadata, or icon source changes; toolkit changes rebuild every node
 and hot imports changed `examples/workflows/*.json` files as inactive workflows. n8n's development hot reload observes
 the generated `dist` files. Restarting the service repeats validation, compilation, linking, and the idempotent sample
 check against the current repository source. Use `npm run dev:seed` while the main container is stopped to force a
-sample re-import.
+sample re-import. Use `npm run dev:clean` when stale workflows require resetting the persistent n8n development state; this removes the project `n8n_data` volume while preserving dependency and npm cache volumes.
 
 ## Shared configuration
 

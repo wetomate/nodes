@@ -10,6 +10,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 - Reworked the Duo human-in-the-loop example around expense reimbursement approval with an n8n form, contextual Duo Push, and approved or denied branches.
 - Documented the Duo Auth API check and logo endpoints in the Duo package README.
+- Added `npm run dev:clean` to reset only the persistent n8n development data volume when stale workflows remain.
 
 ## n8n-nodes-duo 1.0.1 - 2026-09-06
 

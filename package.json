@@ -13,6 +13,7 @@
 		"check:packages": "node scripts/validate-community-node-packages.js",
 		"dev": "sh scripts/dev-environment.sh up",
 		"dev:check": "sh scripts/dev-environment.sh check",
+		"dev:clean": "sh scripts/dev-environment.sh clean",
 		"dev:down": "sh scripts/dev-environment.sh down",
 		"dev:restart": "sh scripts/dev-environment.sh restart",
 		"dev:seed": "sh scripts/dev-environment.sh seed",
