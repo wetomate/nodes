@@ -12,6 +12,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Documented the Duo Auth API check and logo endpoints in the Duo package README.
 - Added `npm run dev:clean` to reset only the persistent n8n development data volume when stale workflows remain.
 
+## n8n-nodes-duo 1.1.0 - 2026-09-19
+
+### Added
+
+- Added a separate Duo Security AI Tool node for n8n AI Agents.
+- Added a capability showcase workflow covering PING, CHECK, PREAUTH, synchronous AUTH, asynchronous AUTH with status polling, and LOGO.
+
+### Changed
+
+- Kept the regular Duo Security node as a workflow node with main inputs and outputs.
+- Corrected Duo Auth API ping signing and empty GET request bodies.
+
 ## n8n-nodes-duo 1.0.1 - 2026-09-06
 
 ### Changed
