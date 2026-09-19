@@ -48,7 +48,8 @@
 			"dist/credentials/DuoSecurityApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/DuoSecurity/DuoSecurity.node.js"
+			"dist/nodes/DuoSecurity/DuoSecurity.node.js",
+			"dist/nodes/DuoSecurity/DuoSecurityTool.node.js"
 		]
 	},
 	"devDependencies": {

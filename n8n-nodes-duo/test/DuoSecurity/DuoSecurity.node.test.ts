@@ -6,6 +6,7 @@ import nock from 'nock';
 
 import { DuoSecurityApi } from '../../credentials/DuoSecurityApi.credentials';
 import { DuoSecurity } from '../../nodes/DuoSecurity/DuoSecurity.node';
+import { DuoSecurityTool } from '../../nodes/DuoSecurity/DuoSecurityTool.node';
 import { NodeTestHarness } from './NodeTestHarness';
 
 const credentials = {
@@ -36,20 +37,26 @@ describe('Duo Security node', () => {
 		});
 	});
 
-	it('provides an AI-specific tool description', () => {
+	it('keeps the regular node on the main output only', () => {
 		const node = new DuoSecurity();
 
-		expect(node.nodeVersions[1].description.builderHint).toEqual({
-			message: expect.stringContaining('Duo user verification'),
+		expect(node.nodeVersions[1].description.usableAsTool).toBeUndefined();
+		expect(node.nodeVersions[1].description.properties[0].builderHint).toEqual({
+			message: expect.stringContaining('Choose PING'),
 		});
+		expect(node.nodeVersions[1].description.outputs).toEqual(['main']);
+	});
+
+	it('exposes a separate AI tool node', () => {
+		const node = new DuoSecurityTool();
+
+		expect(node.nodeVersions[1].description.name).toBe('duoSecurityTool');
 		expect(node.nodeVersions[1].description.usableAsTool).toEqual({
 			replacements: {
 				description: expect.stringContaining('Use Duo Security to verify a user'),
 			},
 		});
-		expect(node.nodeVersions[1].description.properties[0].builderHint).toEqual({
-			message: expect.stringContaining('Choose PING'),
-		});
+		expect(node.nodeVersions[1].description.outputs).toEqual(['ai_tool']);
 	});
 
 	it('uses a square SVG canvas for the node icon', () => {

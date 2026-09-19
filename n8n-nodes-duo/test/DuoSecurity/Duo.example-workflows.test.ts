@@ -38,6 +38,9 @@ describe('Duo example workflows', () => {
 			expect(workflow.nodes.some((node) => node.type === 'n8n-nodes-duo.duoSecurity')).toBe(
 				true,
 			);
+			expect(
+				workflow.nodes.some((node) => node.type === 'n8n-nodes-duo.duoSecurityTool'),
+			).toBe(fileName === 'check-api-health.json');
 			expect(workflow.nodes.every((node) => node.credentials === undefined)).toBe(true);
 
 			for (const [source, outputs] of Object.entries(workflow.connections)) {
@@ -52,15 +55,35 @@ describe('Duo example workflows', () => {
 		},
 	);
 
-	it('keeps the health-check operations in their intended order', () => {
+	it('covers every Duo operation and starts each scenario with a manual trigger', () => {
 		const workflow = readExample('check-api-health.json');
 		const duoNodes = workflow.nodes.filter((node) => node.type === 'n8n-nodes-duo.duoSecurity');
+		const toolNode = nodeByName(workflow, 'Duo Security Tool');
 
-		expect(duoNodes.map((node) => node.parameters.endpoint)).toEqual([
-			'ping',
-			'preauth',
-			'auth',
-			'auth_status',
+		expect(new Set(duoNodes.map((node) => node.parameters.endpoint))).toEqual(
+			new Set(['ping', 'check', 'preauth', 'auth', 'auth_status', 'logo']),
+		);
+		expect(toolNode.type).toBe('n8n-nodes-duo.duoSecurityTool');
+		expect(workflow.nodes.filter((node) => node.type === 'n8n-nodes-base.manualTrigger')).toHaveLength(5);
+		expect(workflow.connections['Duo Security Tool'].ai_tool).toEqual([
+			[{ node: 'Duo Access Assistant', type: 'ai_tool', index: 0 }],
+		]);
+		expect(workflow.connections['Still Waiting?'].main).toEqual([
+			[{ node: 'Wait Before Status Poll', type: 'main', index: 0 }],
+			[{ node: 'Authentication Complete', type: 'main', index: 0 }],
+		]);
+		const syncAuthConnections = workflow.connections['AUTH: Synchronous Duo Push'] as {
+			main: Array<Array<{ node: string; type: string; index: number }>>;
+		};
+		const syncCheckConnections = workflow.connections['CHECK: Was Sync Auth Allowed?'] as {
+			main: Array<Array<{ node: string; type: string; index: number }>>;
+		};
+		expect(syncAuthConnections.main[0][0].node).toBe(
+			'CHECK: Was Sync Auth Allowed?',
+		);
+		expect(syncCheckConnections.main).toEqual([
+			[{ node: 'Sync Auth Approved', type: 'main', index: 0 }],
+			[{ node: 'Sync Auth Denied', type: 'main', index: 0 }],
 		]);
 	});
 

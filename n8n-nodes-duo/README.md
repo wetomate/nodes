@@ -31,11 +31,15 @@ Create a new Duo credential in n8n with these fields:
 Use this credential in all Duo node endpoints.
 See the [Duo Auth API documentation](https://duo.com/docs/authapi) for integration setup and endpoint details.
 
+The package provides two nodes: **Duo Security** for regular workflow connections and **Duo Security AI Tool** for connecting Duo operations to an n8n AI Agent. They share the same credential and operation fields, but only the AI Tool node is available through an `ai_tool` connection.
+
 ## Example: expense reimbursement approval
 
 The included [Duo Expense Reimbursement Approval](./examples/workflows/duo-human-in-the-loop-approval.md) workflow starts with an n8n form. A manager receives a Duo Push containing the employee, expense, amount, and reference, and the workflow marks the expense approved only when Duo returns allow.
 
 The example is inactive and has no credential references. Replace the example manager username and connect the approved branch to your finance or payroll system before enabling it. The Duo Push is a real authentication challenge.
+
+The [Duo Security Capability Showcase](./examples/workflows/check-api-health.json) workflow demonstrates every Duo endpoint, synchronous and asynchronous push flows, status polling, and the separate Duo Security AI Tool connected to an AI Agent. It has five independent Manual Trigger scenarios. Assign a Duo credential to the Duo nodes and configure the chat model before running it; the AUTH paths create real authentication challenges.
 
 ## Supported endpoints
 
@@ -52,7 +56,7 @@ Each operation accepts input parameters and returns JSON output.
 
 ## Development and testing
 
-When the repository Docker development environment starts, it imports the inactive [`Duo Authentication Flow`](./examples/workflows/check-api-health.json) and [`Duo Expense Reimbursement Approval`](./examples/workflows/duo-human-in-the-loop-approval.json) sample workflows. The authentication example demonstrates availability checking, user pre-authentication, an asynchronous push request, and transaction status polling. The approval example starts with an expense form, sends contextual `pushinfo` in a synchronous Duo Push, and branches on the manager's decision; its usage notes are documented in [`duo-human-in-the-loop-approval.md`](./examples/workflows/duo-human-in-the-loop-approval.md). Both workflows intentionally omit credentials. Create or select a Duo credential and use test users before running them; the push step has a real effect.
+When the repository Docker development environment starts, it imports the inactive [`Duo Security Capability Showcase`](./examples/workflows/check-api-health.json) and [`Duo Expense Reimbursement Approval`](./examples/workflows/duo-human-in-the-loop-approval.json) sample workflows. The showcase demonstrates every Duo endpoint, synchronous and asynchronous push flows, status polling, and the node connected as an AI tool. The approval example starts with an expense form, sends contextual `pushinfo` in a synchronous Duo Push, and branches on the manager's decision; its usage notes are documented in [`duo-human-in-the-loop-approval.md`](./examples/workflows/duo-human-in-the-loop-approval.md). Both workflows intentionally omit credentials. Create or select a Duo credential and use test users before running them; the push steps have a real effect.
 
 From the repository root, install the locked dependencies and run the Duo package checks with:
 

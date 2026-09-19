@@ -1,37 +1,63 @@
 {
-	"id": "wetomate-example-duo-authentication-flow",
-	"name": "[Wetomate Example] Duo Authentication Flow",
+	"id": "wetomate-example-duo-capability-showcase",
+	"name": "[Wetomate Example] Duo Security Capability Showcase",
 	"nodes": [
 		{
+			"parameters": {
+				"content": "## Duo Security capability showcase\n\nThis inactive workflow demonstrates every operation exposed by the Duo Security node. Each scenario has its own Manual Trigger as the leftmost entry point so you can test it independently.\n\n### Setup\n\nCreate a Duo Security Auth API credential, then assign it to each Duo node after importing. Replace `alice@example.com` with an enrolled test user. The AUTH scenarios send real authentication requests.\n\nPING and LOGO intentionally have no user parameters: Duo defines both endpoints as parameterless GET requests.\n\nThe AI scenario also needs a chat model credential configured on the Chat Model node.",
+			"height": 520,
+				"width": 420,
+				"color": 5
+			},
+			"id": "wetomate-example-duo-showcase-note",
+			"name": "Capability showcase overview",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [-1168, -32]
+		},
+		{
 			"parameters": {},
-			"id": "wetomate-example-duo-manual-trigger",
-			"name": "Start Duo Check",
+			"id": "wetomate-example-duo-ping-check-trigger",
+			"name": "Scenario 1: Ping and Check",
 			"type": "n8n-nodes-base.manualTrigger",
 			"typeVersion": 1,
-			"position": [0, 0]
+			"position": [-640, 0]
 		},
 		{
 			"parameters": { "endpoint": "ping" },
 			"id": "wetomate-example-duo-ping",
-			"name": "1. Check Duo Availability",
+			"name": "PING: Check Duo Availability",
 			"type": "n8n-nodes-duo.duoSecurity",
 			"typeVersion": 1,
-			"position": [240, 0]
+			"position": [-416, 0]
+		},
+		{
+			"parameters": { "endpoint": "check" },
+			"id": "wetomate-example-duo-check",
+			"name": "CHECK: Verify Signature",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [-192, 0]
+		},
+		{
+			"parameters": {},
+			"id": "wetomate-example-duo-sync-trigger",
+			"name": "Scenario 2: Synchronous Authentication",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [-640, 320]
 		},
 		{
 			"parameters": {
 				"endpoint": "preauth",
 				"userIdentifier": { "mode": "username", "value": "alice@example.com" },
-				"preAuthOptionalFields": {
-					"clientSupportsVerifiedPush": true,
-					"ipaddr": "192.0.2.10"
-				}
+				"preAuthOptionalFields": { "clientSupportsVerifiedPush": true }
 			},
-			"id": "wetomate-example-duo-preauth",
-			"name": "2. Check User Access",
+			"id": "wetomate-example-duo-sync-preauth",
+			"name": "PREAUTH: Check User Access",
 			"type": "n8n-nodes-duo.duoSecurity",
 			"typeVersion": 1,
-			"position": [480, 0]
+			"position": [-416, 320]
 		},
 		{
 			"parameters": {
@@ -39,42 +65,226 @@
 				"userIdentifier": { "mode": "username", "value": "alice@example.com" },
 				"factor": "push",
 				"device": "auto",
-				"pushinfo": {
-					"pairs": [{ "key": "source", "value": "Wetomate n8n workflow" }]
-				},
-				"authOptionalFields": { "async": true, "type": "Workflow sign-in" }
+				"pushinfo": { "pairs": [{ "key": "source", "value": "Wetomate sync showcase" }] },
+				"authOptionalFields": { "async": false, "type": "Synchronous showcase" }
 			},
-			"id": "wetomate-example-duo-auth",
-			"name": "3. Send Duo Push",
+			"id": "wetomate-example-duo-sync-auth",
+			"name": "AUTH: Synchronous Duo Push",
 			"type": "n8n-nodes-duo.duoSecurity",
 			"typeVersion": 1,
-			"position": [720, 0]
+			"position": [-192, 320]
+		},
+		{
+			"parameters": {
+				"conditions": {
+					"options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
+					"conditions": [{
+						"id": "wetomate-example-duo-sync-allow",
+						"leftValue": "={{ $json.result.response.result }}",
+						"rightValue": "allow",
+						"operator": { "type": "string", "operation": "equals" }
+					}],
+					"combinator": "and"
+				}
+			},
+			"id": "wetomate-example-duo-sync-check",
+			"name": "CHECK: Was Sync Auth Allowed?",
+			"type": "n8n-nodes-base.if",
+			"typeVersion": 2.2,
+			"position": [32, 320]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [{ "id": "wetomate-example-duo-sync-approved", "name": "authenticationResult", "type": "string", "value": "approved" }] },
+				"options": {}
+			},
+			"id": "wetomate-example-duo-sync-approved",
+			"name": "Sync Auth Approved",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [256, 224]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [{ "id": "wetomate-example-duo-sync-denied", "name": "authenticationResult", "type": "string", "value": "denied" }] },
+				"options": {}
+			},
+			"id": "wetomate-example-duo-sync-denied",
+			"name": "Sync Auth Denied",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [256, 416]
+		},
+		{
+			"parameters": {},
+			"id": "wetomate-example-duo-async-trigger",
+			"name": "Scenario 3: Asynchronous Authentication",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [-640, 720]
+		},
+		{
+			"parameters": {
+				"endpoint": "preauth",
+				"userIdentifier": { "mode": "username", "value": "alice@example.com" },
+				"preAuthOptionalFields": { "clientSupportsVerifiedPush": true }
+			},
+			"id": "wetomate-example-duo-async-preauth",
+			"name": "PREAUTH: Check Before Async Push",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [-416, 720]
+		},
+		{
+			"parameters": {
+				"endpoint": "auth",
+				"userIdentifier": { "mode": "username", "value": "alice@example.com" },
+				"factor": "push",
+				"device": "auto",
+				"pushinfo": { "pairs": [{ "key": "source", "value": "Wetomate async showcase" }] },
+				"authOptionalFields": { "async": true, "type": "Asynchronous showcase" }
+			},
+			"id": "wetomate-example-duo-async-auth",
+			"name": "AUTH: Start Asynchronous Duo Push",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [-192, 720]
+		},
+		{
+			"parameters": { "amount": 5, "unit": "seconds" },
+			"id": "wetomate-example-duo-async-wait",
+			"name": "Wait Before Status Poll",
+			"type": "n8n-nodes-base.wait",
+			"typeVersion": 1.1,
+			"position": [32, 720]
 		},
 		{
 			"parameters": {
 				"endpoint": "auth_status",
-				"txid": "={{ $json.result.response.txid }}"
+				"txid": "={{ $('AUTH: Start Asynchronous Duo Push').item.json.result.response.txid }}"
 			},
-			"id": "wetomate-example-duo-auth-status",
-			"name": "4. Read Authentication Status",
+			"id": "wetomate-example-duo-async-status",
+			"name": "AUTH STATUS: Poll Transaction",
 			"type": "n8n-nodes-duo.duoSecurity",
 			"typeVersion": 1,
-			"position": [960, 0]
+			"position": [256, 640]
+		},
+		{
+			"parameters": {
+				"conditions": {
+					"options": { "caseSensitive": true, "leftValue": "", "typeValidation": "strict", "version": 2 },
+					"conditions": [{
+						"id": "wetomate-example-duo-async-waiting",
+						"leftValue": "={{ $json.result.response.result }}",
+						"rightValue": "waiting",
+						"operator": { "type": "string", "operation": "equals" }
+					}],
+					"combinator": "and"
+				}
+			},
+			"id": "wetomate-example-duo-async-if",
+			"name": "Still Waiting?",
+			"type": "n8n-nodes-base.if",
+			"typeVersion": 2.2,
+			"position": [480, 720]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [{ "id": "wetomate-example-duo-async-complete", "name": "status", "type": "string", "value": "={{ $json.result.response.result }}" }] },
+				"options": {}
+			},
+			"id": "wetomate-example-duo-async-complete",
+			"name": "Authentication Complete",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [704, 720]
+		},
+		{
+			"parameters": {},
+			"id": "wetomate-example-duo-logo-trigger",
+			"name": "Scenario 4: Retrieve Logo",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [-640, 944]
+		},
+		{
+			"parameters": { "endpoint": "logo" },
+			"id": "wetomate-example-duo-logo",
+			"name": "LOGO: Retrieve Stored Logo",
+			"type": "n8n-nodes-duo.duoSecurity",
+			"typeVersion": 1,
+			"position": [-416, 944]
+		},
+		{
+			"parameters": {},
+			"id": "wetomate-example-duo-ai-trigger",
+			"name": "Scenario 5: Duo as AI Tool",
+			"type": "n8n-nodes-base.manualTrigger",
+			"typeVersion": 1,
+			"position": [-640, 1264]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [{ "id": "wetomate-example-duo-ai-prompt", "name": "prompt", "type": "string", "value": "Check whether alice@example.com is enrolled and allowed to authenticate with Duo. Explain the result briefly." }] },
+				"options": {}
+			},
+			"id": "wetomate-example-duo-ai-prompt",
+			"name": "Prepare AI Request",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [-416, 1264]
+		},
+		{
+			"parameters": {
+				"promptType": "define",
+				"text": "={{ $json.prompt }}",
+				"options": { "systemMessage": "You are a careful access assistant. Use the Duo Security tool to check a user's authentication readiness. Treat only an explicit allow result as approval and explain denied, waiting, or failed results clearly." }
+			},
+			"id": "wetomate-example-duo-ai-agent",
+			"name": "Duo Access Assistant",
+			"type": "@n8n/n8n-nodes-langchain.agent",
+			"typeVersion": 2.2,
+			"position": [-192, 1264]
+		},
+		{
+			"parameters": { "modelName": "gpt-4o-mini", "options": {} },
+			"id": "wetomate-example-duo-ai-model",
+			"name": "Chat Model",
+			"type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+			"typeVersion": 1.2,
+			"position": [-184, 1496]
+		},
+		{
+			"parameters": {
+				"endpoint": "preauth",
+				"userIdentifier": { "mode": "username", "value": "={{ $fromAI('username', 'The Duo username to check', 'string') }}" },
+				"preAuthOptionalFields": { "clientSupportsVerifiedPush": true }
+			},
+			"id": "wetomate-example-duo-ai-tool",
+			"name": "Duo Security Tool",
+			"type": "n8n-nodes-duo.duoSecurityTool",
+			"typeVersion": 1,
+			"position": [-56, 1496]
 		}
 	],
 	"connections": {
-		"Start Duo Check": {
-			"main": [[{ "node": "1. Check Duo Availability", "type": "main", "index": 0 }]]
-		},
-		"1. Check Duo Availability": {
-			"main": [[{ "node": "2. Check User Access", "type": "main", "index": 0 }]]
-		},
-		"2. Check User Access": {
-			"main": [[{ "node": "3. Send Duo Push", "type": "main", "index": 0 }]]
-		},
-		"3. Send Duo Push": {
-			"main": [[{ "node": "4. Read Authentication Status", "type": "main", "index": 0 }]]
-		}
+		"Scenario 1: Ping and Check": { "main": [[{ "node": "PING: Check Duo Availability", "type": "main", "index": 0 }]] },
+		"PING: Check Duo Availability": { "main": [[{ "node": "CHECK: Verify Signature", "type": "main", "index": 0 }]] },
+		"Scenario 2: Synchronous Authentication": { "main": [[{ "node": "PREAUTH: Check User Access", "type": "main", "index": 0 }]] },
+		"PREAUTH: Check User Access": { "main": [[{ "node": "AUTH: Synchronous Duo Push", "type": "main", "index": 0 }]] },
+		"AUTH: Synchronous Duo Push": { "main": [[{ "node": "CHECK: Was Sync Auth Allowed?", "type": "main", "index": 0 }]] },
+		"CHECK: Was Sync Auth Allowed?": { "main": [[{ "node": "Sync Auth Approved", "type": "main", "index": 0 }], [{ "node": "Sync Auth Denied", "type": "main", "index": 0 }]] },
+		"Scenario 3: Asynchronous Authentication": { "main": [[{ "node": "PREAUTH: Check Before Async Push", "type": "main", "index": 0 }]] },
+		"PREAUTH: Check Before Async Push": { "main": [[{ "node": "AUTH: Start Asynchronous Duo Push", "type": "main", "index": 0 }]] },
+		"AUTH: Start Asynchronous Duo Push": { "main": [[{ "node": "Wait Before Status Poll", "type": "main", "index": 0 }]] },
+		"Wait Before Status Poll": { "main": [[{ "node": "AUTH STATUS: Poll Transaction", "type": "main", "index": 0 }]] },
+		"AUTH STATUS: Poll Transaction": { "main": [[{ "node": "Still Waiting?", "type": "main", "index": 0 }]] },
+		"Still Waiting?": { "main": [[{ "node": "Wait Before Status Poll", "type": "main", "index": 0 }], [{ "node": "Authentication Complete", "type": "main", "index": 0 }]] },
+		"Scenario 4: Retrieve Logo": { "main": [[{ "node": "LOGO: Retrieve Stored Logo", "type": "main", "index": 0 }]] },
+		"Scenario 5: Duo as AI Tool": { "main": [[{ "node": "Prepare AI Request", "type": "main", "index": 0 }]] },
+		"Prepare AI Request": { "main": [[{ "node": "Duo Access Assistant", "type": "main", "index": 0 }]] },
+		"Chat Model": { "ai_languageModel": [[{ "node": "Duo Access Assistant", "type": "ai_languageModel", "index": 0 }]] },
+		"Duo Security Tool": { "ai_tool": [[{ "node": "Duo Access Assistant", "type": "ai_tool", "index": 0 }]] }
 	},
 	"active": false,
 	"settings": { "executionOrder": "v1" }
