@@ -65,6 +65,17 @@ function canonicalizeV5(
 	].join('\n');
 }
 
+function isPingRequest(url: string | undefined): boolean {
+	if (!url) return false;
+	if (url === '/auth/v2/ping') return true;
+
+	try {
+		return new URL(url).pathname === '/auth/v2/ping';
+	} catch {
+		return false;
+	}
+}
+
 export function signV5(
 	ikey: string,
 	skey: string,
@@ -127,7 +138,7 @@ export class DuoSecurityApi implements ICredentialType {
 		const skey = credentials.skey as string;
 		const hostname = credentials.hostname as string;
 
-		if (requestOptions.url !== '/auth/v2/ping') {
+		if (!isPingRequest(requestOptions.url)) {
 			const date = new Date().toUTCString();
 
 			const bodyString =

@@ -1,4 +1,4 @@
-import { signV5 } from '../../credentials/DuoSecurityApi.credentials';
+import { DuoSecurityApi, signV5 } from '../../credentials/DuoSecurityApi.credentials';
 
 describe('sigV5', () => {
 	it('V5 signature', () => {
@@ -21,5 +21,39 @@ describe('sigV5', () => {
 		const auth = signV5(ikey, skey, method, host, path, params, date, body);
 
 		expect(auth).toEqual(exp_sig);
+	});
+});
+
+describe('Duo credential authentication', () => {
+	it('does not add authorization to ping requests with an absolute URL', async () => {
+		const credential = new DuoSecurityApi();
+		const request = await credential.authenticate(
+			{ ikey: 'test_ikey', skey: 'test_skey', hostname: 'api-test.duosecurity.com' },
+			{
+				url: 'https://api-test.duosecurity.com/auth/v2/ping',
+				method: 'GET',
+			},
+		);
+
+		expect(request.headers).toBeUndefined();
+		expect(request.baseURL).toBe('https://api-test.duosecurity.com');
+	});
+
+	it('signs GET requests with an empty body', async () => {
+		const credential = new DuoSecurityApi();
+		const request = await credential.authenticate(
+			{ ikey: 'test_ikey', skey: 'test_skey', hostname: 'api-test.duosecurity.com' },
+			{
+				url: '/auth/v2/check',
+				method: 'GET',
+				body: '',
+				qs: {},
+			},
+		);
+
+		expect(request.headers).toMatchObject({
+			Authorization: expect.stringMatching(/^Basic /),
+			Date: expect.any(String),
+		});
 	});
 });
