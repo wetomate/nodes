@@ -1,4 +1,4 @@
-import type { ICredentialType, INodeProperties } from 'n8n-workflow';
+import type { ICredentialTestRequest, ICredentialType, INodeProperties } from 'n8n-workflow';
 
 export class RestApiHeaderAuthApi implements ICredentialType {
 	name = 'restApiHeaderAuthApi';
@@ -9,7 +9,12 @@ export class RestApiHeaderAuthApi implements ICredentialType {
 		light: 'file:../nodes/RestApi/rest-api.svg',
 		dark: 'file:../nodes/RestApi/rest-api-dark.svg',
 	};
-	test = { request: { url: '/' } };
+	test: ICredentialTestRequest = {
+		request: {
+			method: 'GET',
+			url: '/',
+		},
+	};
 
 	properties: INodeProperties[] = [
 		{
