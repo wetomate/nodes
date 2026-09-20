@@ -50,9 +50,8 @@ starts.
 
 Sample workflows belong to their provider package under `n8n-nodes-*/examples/workflows` and are included in the
 published package. They use stable workflow and node IDs, remain inactive, and never contain credential references. The
-entry point aggregates and validates them, rewrites package node types to n8n's `CUSTOM` namespace only in the temporary
-development import, then records a content hash in the persistent n8n data volume so unchanged samples aren't imported
-again.
+entry point aggregates and validates them, gives temporary development imports the `CUSTOM` node namespace and deterministic
+webhook IDs, then records a content hash in the persistent n8n data volume so unchanged samples aren't imported again.
 
 Use the root `dev:*` npm scripts to operate the environment. Source remains on the host, but dependencies stay in the
 container so native packages match the n8n image. The watcher rebuilds an affected node package when its node,

@@ -20,3 +20,9 @@ When adding or changing a node:
 - Convert provider failures into useful n8n errors without exposing secrets.
 
 Run the affected package's build and lint scripts. Run its tests whenever behavior changes.
+
+For community-node sample workflows, keep source exports under the package's `examples/workflows/` directory. Use stable workflow IDs, names beginning with `[Wetomate Example]`, `active: false`, package node types, and no credential references. Do not copy development-only `CUSTOM.*` node types, generated webhook IDs, instance metadata, or execution data into the source export.
+
+Keep the workflow companions together under `examples/workflows/` using the exact workflow stem: `<name>.json`, `<name>.md`, and `<name>.insomnia.json`. Use an `n8n_base_url` environment variable so the same requests work with both `/webhook-test` and `/webhook`.
+
+When arranging workflow examples, use a consistent sticky-note size and a non-overlapping grid. Place the connected node cards below the explanatory note content so long notes do not cover the nodes, and include a runnable `curl` example in each scenario note.

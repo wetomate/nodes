@@ -70,6 +70,27 @@ describe('sample workflow preparation', () => {
 		);
 	});
 
+	it('ignores Insomnia exports stored beside workflows', () => {
+		const repositoryRoot = createRepository();
+		const outputFile = path.join(repositoryRoot, 'prepared.json');
+		addSample(repositoryRoot, 'n8n-nodes-alpha', 'service-mvp');
+		const workflowDirectory = path.join(
+			repositoryRoot,
+			'n8n-nodes-alpha',
+			'examples',
+			'workflows',
+		);
+		fs.writeFileSync(
+			path.join(workflowDirectory, 'service-mvp.insomnia.json'),
+			JSON.stringify({ _type: 'export', resources: [] }),
+		);
+
+		const result = prepareSampleWorkflows(repositoryRoot, outputFile);
+
+		assert.equal(result.count, 1);
+		assert.equal(JSON.parse(fs.readFileSync(outputFile, 'utf8')).length, 1);
+	});
+
 	it('changes the content hash when a sample changes', () => {
 		const repositoryRoot = createRepository();
 		const outputFile = path.join(repositoryRoot, 'prepared.json');
@@ -84,7 +105,7 @@ describe('sample workflow preparation', () => {
 		assert.notEqual(initial.hash, updated.hash);
 	});
 
-	it('uses CUSTOM node types only in the prepared development import', () => {
+	it('prepares custom node types and webhook IDs for development imports', () => {
 		const repositoryRoot = createRepository();
 		const packageOutput = path.join(repositoryRoot, 'package.json');
 		const developmentOutput = path.join(repositoryRoot, 'development.json');
@@ -120,6 +141,7 @@ describe('sample workflow preparation', () => {
 		assert.equal(packageWorkflow.nodes[1].type, 'n8n-nodes-alpha.providerNode');
 		assert.equal(developmentWorkflow.nodes[0].type, 'n8n-nodes-base.manualTrigger');
 		assert.equal(developmentWorkflow.nodes[1].type, 'CUSTOM.providerNode');
+		assert.equal(developmentWorkflow.nodes[1].webhookId, 'n8n-nodes-alpha-first-provider-node');
 		assert.notEqual(packageResult.hash, developmentResult.hash);
 	});
 

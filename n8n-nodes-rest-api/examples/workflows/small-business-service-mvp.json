@@ -1,0 +1,356 @@
+{
+	"id": "wetomate-example-rest-api-small-business-mvp",
+	"name": "[Wetomate Example] Small Business Service MVP API",
+	"nodes": [
+		{
+			"parameters": {
+				"content": "## Small business service MVP API\n\nThis inactive showcase models a local home-repair business. Each REST API trigger is an independent scenario with its own request validation and response.\n\n### Setup\n\nImport this workflow, select **Listen for test event** on the scenario you want to try, and run the matching request from the Insomnia export. Use the `n8n_base_url` environment variable to switch between `http://localhost:5678/webhook-test` and `http://localhost:5678/webhook`.\n\nThe responses are intentionally self-contained examples. Replace the Set nodes with a database, CRM, calendar, file store, or notification step when adapting this MVP.",
+				"height": 440,
+				"width": 500,
+				"color": 5
+			},
+			"id": "wetomate-example-rest-api-mvp-overview",
+			"name": "MVP overview",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [-960, -480]
+		},
+		{
+			"parameters": {
+				"content": "## 1. Create a service request\n\nAccept a new customer request with JSON Schema validation. The endpoint requires a customer name, valid email, service type, description, and preferred date.\n\n### Test\n\n```bash\ncurl -X POST '{{N8N_BASE_URL}}/wetomate/mvp/service-requests' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"customerName\":\"Alice Example\",\"email\":\"alice@example.com\",\"service\":\"boiler-repair\",\"description\":\"Heating stopped working\",\"preferredDate\":\"2026-09-25\"}'\n```",
+				"height": 882,
+				"width": 500,
+				"color": 7
+			},
+			"id": "wetomate-example-rest-api-mvp-note-request",
+			"name": "Scenario 1 details",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [-400, -480]
+		},
+		{
+			"parameters": {
+				"content": "## 2. Get an instant quote\n\nUse query parameters to return a simple estimate before a customer books. This demonstrates a GET endpoint with no request body.\n\n### Test\n\n```bash\ncurl '{{N8N_BASE_URL}}/wetomate/mvp/quotes?service=boiler-repair&urgency=standard&postcode=10115'\n```",
+				"height": 882,
+				"width": 500,
+				"color": 7
+			},
+			"id": "wetomate-example-rest-api-mvp-note-quote",
+			"name": "Scenario 2 details",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+			"position": [160, -480]
+		},
+		{
+			"parameters": {
+				"content": "## 3. Schedule an appointment\n\nTurn an accepted request into a scheduled visit. The schema demonstrates enums, date-time validation, and a default visit duration.\n\n### Test\n\n```bash\ncurl -X POST '{{N8N_BASE_URL}}/wetomate/mvp/appointments' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"requestId\":\"REQ-1001\",\"customerEmail\":\"alice@example.com\",\"start\":\"2026-09-25T09:00:00Z\",\"timeSlot\":\"morning\",\"accessNotes\":\"Ring the blue doorbell\"}'\n```",
+				"height": 882,
+				"width": 500,
+				"color": 7
+			},
+			"id": "wetomate-example-rest-api-mvp-note-appointment",
+			"name": "Scenario 3 details",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+				"position": [720, -480]
+		},
+		{
+			"parameters": {
+				"content": "## 4. Update job status\n\nUse a dynamic path segment and PATCH to update a job after dispatch. In the development import, n8n prefixes dynamic webhook paths with the deterministic webhook ID `wetomate-example-rest-api-mvp-wetomate-example-rest-api-mvp-status-trigger`. The request body limits status values to the business states used by the MVP.\n\n### Test\n\n```bash\ncurl -X PATCH '{{N8N_BASE_URL}}/wetomate-example-rest-api-mvp-wetomate-example-rest-api-mvp-status-trigger/wetomate/mvp/jobs/JOB-1001/status' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"status\":\"scheduled\",\"note\":\"Customer confirmed the appointment\"}'\n```",
+				"height": 882,
+				"width": 500,
+				"color": 7
+			},
+			"id": "wetomate-example-rest-api-mvp-note-status",
+			"name": "Scenario 4 details",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+				"position": [-400, 480]
+		},
+		{
+			"parameters": {
+				"content": "## 5. Upload a job attachment\n\nReceive a technician photo or document as multipart form data. In the development import, n8n prefixes this dynamic webhook path with the deterministic webhook ID `wetomate-example-rest-api-mvp-wetomate-example-rest-api-mvp-attachment-trigger`. The REST API node exposes the uploaded file as binary data for a file store or ticketing system.\n\n### Test\n\n```bash\ncurl -X POST '{{N8N_BASE_URL}}/wetomate-example-rest-api-mvp-wetomate-example-rest-api-mvp-attachment-trigger/wetomate/mvp/jobs/JOB-1001/attachments' \\\n  -F 'description=Photo of damaged boiler' \\\n  -F 'file=@./boiler-photo.jpg'\n```",
+				"height": 882,
+				"width": 500,
+				"color": 7
+			},
+			"id": "wetomate-example-rest-api-mvp-note-attachment",
+			"name": "Scenario 5 details",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+				"position": [160, 480]
+		},
+		{
+			"parameters": {
+				"content": "## 6. Demonstrate strict validation\n\nShow the client-facing error returned before the workflow starts. Additional properties are rejected, the email must be valid, and the request ID must be a positive integer.\n\n### Invalid request\n\n```bash\ncurl -i -X POST '{{N8N_BASE_URL}}/wetomate/mvp/validation-demo' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"requestId\":\"wrong\",\"email\":\"invalid\",\"unexpected\":true}'\n```\n\n### Valid request\n\n```bash\ncurl -X POST '{{N8N_BASE_URL}}/wetomate/mvp/validation-demo' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"requestId\":1001,\"email\":\"alice@example.com\"}'\n```",
+				"height": 882,
+				"width": 500,
+				"color": 7
+			},
+			"id": "wetomate-example-rest-api-mvp-note-validation",
+			"name": "Scenario 6 details",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+				"position": [720, 480]
+		},
+		{
+			"parameters": {
+				"content": "## 7. Immediate health response\n\nReturn a custom raw text body immediately from the REST API trigger. This is useful for uptime monitors and load balancers because the workflow does not need to start.\n\n### Test\n\n```bash\ncurl -i '{{N8N_BASE_URL}}/wetomate/mvp/health'\n```\n\nExpected body: `service-mvp-ok`",
+				"height": 882,
+				"width": 500,
+				"color": 7
+			},
+			"id": "wetomate-example-rest-api-mvp-note-health",
+			"name": "Scenario 7 details",
+			"type": "n8n-nodes-base.stickyNote",
+			"typeVersion": 1,
+				"position": [1280, 480]
+		},
+		{
+			"parameters": {
+				"httpMethod": "POST",
+				"path": "wetomate/mvp/service-requests",
+				"authentication": "none",
+				"responseMode": "lastNode",
+				"responseData": "firstEntryJson",
+				"validateBody": true,
+				"schemaSource": "json",
+				"jsonSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"customerName\", \"email\", \"service\", \"description\", \"preferredDate\"],\n  \"properties\": {\n    \"customerName\": { \"type\": \"string\", \"minLength\": 2 },\n    \"email\": { \"type\": \"string\", \"format\": \"email\" },\n    \"service\": { \"type\": \"string\", \"enum\": [\"boiler-repair\", \"plumbing\", \"electrical\"] },\n    \"description\": { \"type\": \"string\", \"minLength\": 10 },\n    \"preferredDate\": { \"type\": \"string\", \"format\": \"date\" }\n  }\n}",
+				"ajvOptions": { "allErrors": true, "validateFormats": true },
+				"validationErrorCode": 400,
+				"options": { "responseCode": 201, "responseContentType": "application/json" }
+			},
+			"id": "wetomate-example-rest-api-mvp-request-trigger",
+			"name": "Create Service Request",
+			"type": "n8n-nodes-rest-api.restApi",
+			"typeVersion": 1,
+			"position": [-368, 160]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [
+					{ "id": "mvp-request-id", "name": "requestId", "type": "string", "value": "REQ-1001" },
+					{ "id": "mvp-request-status", "name": "status", "type": "string", "value": "received" },
+					{ "id": "mvp-request-next", "name": "nextAction", "type": "string", "value": "A coordinator will contact the customer within one business day" },
+					{ "id": "mvp-request-customer", "name": "customer", "type": "string", "value": "={{ $json.body.customerName }}" },
+					{ "id": "mvp-request-service", "name": "service", "type": "string", "value": "={{ $json.body.service }}" }
+				] },
+				"includeOtherFields": false,
+				"options": {}
+			},
+			"id": "wetomate-example-rest-api-mvp-request-response",
+			"name": "Return Service Request",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [-128, 160]
+		},
+		{
+			"parameters": {
+				"httpMethod": "GET",
+				"path": "wetomate/mvp/quotes",
+				"authentication": "none",
+				"responseMode": "lastNode",
+				"responseData": "firstEntryJson",
+				"validateBody": false,
+				"options": { "responseCode": 200, "responseContentType": "application/json" }
+			},
+			"id": "wetomate-example-rest-api-mvp-quote-trigger",
+			"name": "Get Instant Quote",
+			"type": "n8n-nodes-rest-api.restApi",
+			"typeVersion": 1,
+			"position": [208, 160]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [
+					{ "id": "mvp-quote-service", "name": "service", "type": "string", "value": "={{ $json.query.service || 'boiler-repair' }}" },
+					{ "id": "mvp-quote-urgency", "name": "urgency", "type": "string", "value": "={{ $json.query.urgency || 'standard' }}" },
+					{ "id": "mvp-quote-currency", "name": "currency", "type": "string", "value": "EUR" },
+					{ "id": "mvp-quote-estimate", "name": "estimatedPrice", "type": "number", "value": "={{ $json.query.urgency === 'emergency' ? 180 : 95 }}" },
+					{ "id": "mvp-quote-valid", "name": "validForHours", "type": "number", "value": 24 }
+				] },
+				"includeOtherFields": false,
+				"options": {}
+			},
+			"id": "wetomate-example-rest-api-mvp-quote-response",
+			"name": "Return Quote",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [448, 160]
+		},
+		{
+			"parameters": {
+				"httpMethod": "POST",
+				"path": "wetomate/mvp/appointments",
+				"authentication": "none",
+				"responseMode": "lastNode",
+				"responseData": "firstEntryJson",
+				"validateBody": true,
+				"schemaSource": "json",
+				"jsonSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"requestId\", \"customerEmail\", \"start\", \"timeSlot\"],\n  \"properties\": {\n    \"requestId\": { \"type\": \"string\", \"pattern\": \"^REQ-[0-9]+$\" },\n    \"customerEmail\": { \"type\": \"string\", \"format\": \"email\" },\n    \"start\": { \"type\": \"string\", \"format\": \"date-time\" },\n    \"timeSlot\": { \"type\": \"string\", \"enum\": [\"morning\", \"afternoon\"] },\n    \"accessNotes\": { \"type\": \"string\" }\n  }\n}",
+				"ajvOptions": { "allErrors": true, "validateFormats": true },
+				"validationErrorCode": 400,
+				"options": { "responseCode": 201, "responseContentType": "application/json" }
+			},
+			"id": "wetomate-example-rest-api-mvp-appointment-trigger",
+			"name": "Schedule Appointment",
+			"type": "n8n-nodes-rest-api.restApi",
+			"typeVersion": 1,
+			"position": [736, 160]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [
+					{ "id": "mvp-appointment-id", "name": "appointmentId", "type": "string", "value": "APT-1001" },
+					{ "id": "mvp-appointment-status", "name": "status", "type": "string", "value": "scheduled" },
+					{ "id": "mvp-appointment-request", "name": "requestId", "type": "string", "value": "={{ $json.body.requestId }}" },
+					{ "id": "mvp-appointment-start", "name": "start", "type": "string", "value": "={{ $json.body.start }}" },
+					{ "id": "mvp-appointment-duration", "name": "durationMinutes", "type": "number", "value": 90 }
+				] },
+				"includeOtherFields": false,
+				"options": {}
+			},
+			"id": "wetomate-example-rest-api-mvp-appointment-response",
+			"name": "Return Appointment",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [976, 160]
+		},
+		{
+			"parameters": {
+				"httpMethod": "PATCH",
+				"path": "wetomate/mvp/jobs/:jobId/status",
+				"authentication": "none",
+				"responseMode": "lastNode",
+				"responseData": "firstEntryJson",
+				"validateBody": true,
+				"schemaSource": "json",
+				"jsonSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"status\"],\n  \"properties\": {\n    \"status\": { \"type\": \"string\", \"enum\": [\"received\", \"scheduled\", \"in-progress\", \"completed\", \"cancelled\"] },\n    \"note\": { \"type\": \"string\", \"maxLength\": 500 }\n  }\n}",
+				"ajvOptions": { "allErrors": true },
+				"validationErrorCode": 422,
+				"options": { "responseCode": 200, "responseContentType": "application/json" }
+			},
+			"id": "wetomate-example-rest-api-mvp-status-trigger",
+			"name": "Update Job Status",
+			"type": "n8n-nodes-rest-api.restApi",
+			"typeVersion": 1,
+			"position": [-288, 1140]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [
+					{ "id": "mvp-status-job", "name": "jobId", "type": "string", "value": "={{ $json.params.jobId }}" },
+					{ "id": "mvp-status-value", "name": "status", "type": "string", "value": "={{ $json.body.status }}" },
+					{ "id": "mvp-status-note", "name": "note", "type": "string", "value": "={{ $json.body.note || '' }}" },
+					{ "id": "mvp-status-updated", "name": "updated", "type": "boolean", "value": true }
+				] },
+				"includeOtherFields": false,
+				"options": {}
+			},
+			"id": "wetomate-example-rest-api-mvp-status-response",
+			"name": "Return Job Status",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [-48, 1140]
+		},
+		{
+			"parameters": {
+				"httpMethod": "POST",
+				"path": "wetomate/mvp/jobs/:jobId/attachments",
+				"authentication": "none",
+				"responseMode": "lastNode",
+				"responseData": "firstEntryJson",
+				"validateBody": false,
+				"options": { "responseCode": 201, "responseContentType": "application/json", "binaryPropertyName": "file" }
+			},
+			"id": "wetomate-example-rest-api-mvp-attachment-trigger",
+			"name": "Receive Job Attachment",
+			"type": "n8n-nodes-rest-api.restApi",
+			"typeVersion": 1,
+			"position": [240, 1140]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [
+					{ "id": "mvp-attachment-job", "name": "jobId", "type": "string", "value": "={{ $json.params.jobId }}" },
+					{ "id": "mvp-attachment-description", "name": "description", "type": "string", "value": "={{ $json.body.description || 'No description supplied' }}" },
+					{ "id": "mvp-attachment-status", "name": "status", "type": "string", "value": "received" },
+					{ "id": "mvp-attachment-next", "name": "nextAction", "type": "string", "value": "Store the binary file and attach it to the job record" }
+				] },
+				"includeOtherFields": false,
+				"options": {}
+			},
+			"id": "wetomate-example-rest-api-mvp-attachment-response",
+			"name": "Return Attachment Receipt",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [480, 1140]
+		},
+		{
+			"parameters": {
+				"httpMethod": "POST",
+				"path": "wetomate/mvp/validation-demo",
+				"authentication": "none",
+				"responseMode": "lastNode",
+				"responseData": "firstEntryJson",
+				"validateBody": true,
+				"schemaSource": "json",
+				"jsonSchema": "{\n  \"type\": \"object\",\n  \"additionalProperties\": false,\n  \"required\": [\"requestId\", \"email\"],\n  \"properties\": {\n    \"requestId\": { \"type\": \"integer\", \"minimum\": 1 },\n    \"email\": { \"type\": \"string\", \"format\": \"email\" }\n  }\n}",
+				"ajvOptions": { "allErrors": true, "validateFormats": true },
+				"validationErrorCode": 400,
+				"options": { "responseCode": 202, "responseContentType": "application/json" }
+			},
+			"id": "wetomate-example-rest-api-mvp-validation-trigger",
+			"name": "Strict Validation Demo",
+			"type": "n8n-nodes-rest-api.restApi",
+			"typeVersion": 1,
+			"position": [752, 1140]
+		},
+		{
+			"parameters": {
+				"assignments": { "assignments": [
+					{ "id": "mvp-validation-accepted", "name": "accepted", "type": "boolean", "value": true },
+					{ "id": "mvp-validation-message", "name": "message", "type": "string", "value": "The request passed strict validation" },
+					{ "id": "mvp-validation-request", "name": "requestId", "type": "number", "value": "={{ $json.body.requestId }}" }
+				] },
+				"includeOtherFields": false,
+				"options": {}
+			},
+			"id": "wetomate-example-rest-api-mvp-validation-response",
+			"name": "Return Validation Result",
+			"type": "n8n-nodes-base.set",
+			"typeVersion": 3.4,
+			"position": [992, 1140]
+		},
+		{
+			"parameters": {
+				"httpMethod": "GET",
+				"path": "wetomate/mvp/health",
+				"authentication": "none",
+				"responseMode": "onReceived",
+				"validateBody": false,
+				"options": {
+					"responseCode": 200,
+					"responseContentType": "text/plain; charset=utf-8",
+					"responseData": "service-mvp-ok"
+				}
+			},
+			"id": "wetomate-example-rest-api-mvp-health-trigger",
+			"name": "Immediate Health Response",
+			"type": "n8n-nodes-rest-api.restApi",
+			"typeVersion": 1,
+			"position": [1312, 1140]
+		}
+	],
+	"connections": {
+		"Create Service Request": { "main": [[{ "node": "Return Service Request", "type": "main", "index": 0 }]] },
+		"Get Instant Quote": { "main": [[{ "node": "Return Quote", "type": "main", "index": 0 }]] },
+		"Schedule Appointment": { "main": [[{ "node": "Return Appointment", "type": "main", "index": 0 }]] },
+		"Update Job Status": { "main": [[{ "node": "Return Job Status", "type": "main", "index": 0 }]] },
+		"Receive Job Attachment": { "main": [[{ "node": "Return Attachment Receipt", "type": "main", "index": 0 }]] },
+		"Strict Validation Demo": { "main": [[{ "node": "Return Validation Result", "type": "main", "index": 0 }]] }
+	},
+	"active": false,
+	"settings": { "executionOrder": "v1" },
+	"versionId": "wetomate-example-rest-api-small-business-mvp-v1"
+}

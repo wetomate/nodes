@@ -26,7 +26,12 @@ function discoverSampleWorkflows(repositoryRoot) {
 
 		const workflowFiles = fs
 			.readdirSync(workflowDirectory, { withFileTypes: true })
-			.filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
+			.filter(
+				(entry) =>
+					entry.isFile() &&
+					entry.name.endsWith('.json') &&
+					!entry.name.endsWith('.insomnia.json'),
+			)
 			.map((entry) => path.join(workflowDirectory, entry.name))
 			.sort();
 
@@ -93,7 +98,7 @@ function validateSampleWorkflow(workflow, packageName, relativePath) {
 function prepareSampleWorkflows(repositoryRoot, outputFile, options = {}) {
 	const samples = discoverSampleWorkflows(repositoryRoot);
 	const hash = crypto.createHash('sha256');
-	hash.update(options.development ? 'development-custom-types-v1' : 'package-types-v1');
+	hash.update(options.development ? 'development-custom-types-v2' : 'package-types-v1');
 	hash.update('\0');
 
 	for (const sample of samples) {
@@ -122,13 +127,17 @@ function prepareSampleWorkflows(repositoryRoot, outputFile, options = {}) {
 function useDevelopmentNodeTypes(workflow, packageName) {
 	return {
 		...workflow,
-		nodes: workflow.nodes.map((node) => ({
-			...node,
-			type:
-				typeof node.type === 'string' && node.type.startsWith(`${packageName}.`)
-					? `CUSTOM.${node.type.slice(packageName.length + 1)}`
-					: node.type,
-		})),
+		nodes: workflow.nodes.map((node) => {
+			if (typeof node.type !== 'string' || !node.type.startsWith(`${packageName}.`)) {
+				return node;
+			}
+
+			return {
+				...node,
+				type: `CUSTOM.${node.type.slice(packageName.length + 1)}`,
+				webhookId: node.webhookId ?? `${workflow.id}-${node.id}`,
+			};
+		}),
 	};
 }
 
