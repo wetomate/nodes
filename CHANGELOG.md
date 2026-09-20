@@ -12,6 +12,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Documented the Duo Auth API check and logo endpoints in the Duo package README.
 - Added `npm run dev:clean` to reset only the persistent n8n development data volume when stale workflows remain.
 
+## n8n-nodes-rest-api 1.0.1 - 2026-09-20
+
+### Fixed
+
+- Added explicit credential test request definitions for the Basic, Header, and JWT authentication credentials.
+
 ## n8n-nodes-duo 1.1.0 - 2026-09-19
 
 ### Added
