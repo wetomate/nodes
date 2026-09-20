@@ -1,0 +1,1 @@
+../n8n-nodes-rest-api/credentials/RestApiBasicAuthApi.credentials.ts

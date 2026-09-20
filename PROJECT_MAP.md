@@ -7,6 +7,7 @@ This repository is an npm workspace containing the shared Wetomate toolkit and t
 ├── configs/                    Shared build, lint, test, and formatting defaults
 ├── wetomate-node-toolkit/      Reusable node-building functions and TypeScript types
 ├── n8n-nodes-duo/              Duo Security community node package
+├── n8n-nodes-rest-api/         REST API trigger and AJV validation package
 ├── .github/workflows/          Repository validation and npm publishing automation
 ├── scripts/                    Repository-wide validation utilities
 ├── Dockerfile.dev              n8n-based development image
@@ -49,9 +50,8 @@ starts.
 
 Sample workflows belong to their provider package under `n8n-nodes-*/examples/workflows` and are included in the
 published package. They use stable workflow and node IDs, remain inactive, and never contain credential references. The
-entry point aggregates and validates them, rewrites package node types to n8n's `CUSTOM` namespace only in the temporary
-development import, then records a content hash in the persistent n8n data volume so unchanged samples aren't imported
-again.
+entry point aggregates and validates them, gives temporary development imports the `CUSTOM` node namespace and deterministic
+webhook IDs, then records a content hash in the persistent n8n data volume so unchanged samples aren't imported again.
 
 Use the root `dev:*` npm scripts to operate the environment. Source remains on the host, but dependencies stay in the
 container so native packages match the n8n image. The watcher rebuilds an affected node package when its node,

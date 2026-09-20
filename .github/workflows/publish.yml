@@ -28,9 +28,13 @@ jobs:
               echo "directory=n8n-nodes-duo" >> "$GITHUB_OUTPUT"
               echo "version=${RELEASE_TAG#n8n-nodes-duo-v}" >> "$GITHUB_OUTPUT"
               ;;
+            n8n-nodes-rest-api-v*)
+              echo "directory=n8n-nodes-rest-api" >> "$GITHUB_OUTPUT"
+              echo "version=${RELEASE_TAG#n8n-nodes-rest-api-v}" >> "$GITHUB_OUTPUT"
+              ;;
             *)
               echo "Unsupported release tag: $RELEASE_TAG" >&2
-              echo "Use toolkit-v<version> or n8n-nodes-duo-v<version>." >&2
+              echo "Use toolkit-v<version>, n8n-nodes-duo-v<version>, or n8n-nodes-rest-api-v<version>." >&2
               exit 1
               ;;
           esac
