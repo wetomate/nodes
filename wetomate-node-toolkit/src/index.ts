@@ -1,2 +1,2 @@
-export * from "./interfaces";
+export * from "./collections";
 export * from "./parameter-mapping";

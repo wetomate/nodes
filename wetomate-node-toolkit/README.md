@@ -10,6 +10,7 @@ The toolkit provides composable helpers for processing and cleaning node paramet
 - Rename, omit, or transform values without extending `INodeProperties`.
 - Preserve per-item expression evaluation by passing the current item index.
 - Transform optional and complex input collections.
+- Verify supported HMAC, RSA, RSA-PSS, and ECDSA JWTs with the built-in crypto module.
 - Bundle reusable processing code into self-contained community-node packages.
 
 ## Installation
@@ -63,7 +64,22 @@ const requestParameters = mapNodeParameters(this, itemIndex, rules);
 
 Rules without a transformer stringify and trim their value. A transformer can return several fields or return `null`/`undefined` to omit a value. Later rules replace earlier fields with the same name.
 
-`IWetomateNodeProperties` and `WetomateNodePropertiesArray` remain available as deprecated compatibility exports. New nodes should use standard n8n properties and separate `ParameterMappingRule` values.
+New nodes should use standard n8n properties and separate `ParameterMappingRule` values.
+
+## JWT verification
+
+Use the dedicated subpath when a node must verify a JWT with a caller-provided key:
+
+```ts
+import {
+	verifyJwt,
+	type JwtAlgorithm,
+} from "@wetomate/n8n-node-toolkit/jwt-verification";
+
+const payload = verifyJwt(token, verificationKey, algorithm as JwtAlgorithm);
+```
+
+The verifier checks the token signature, the declared algorithm, and numeric `exp` and `nbf` claims. It only uses Node's built-in `node:crypto` APIs, so importing it does not pull the rest of the toolkit into a node bundle.
 
 ## Benefits
 

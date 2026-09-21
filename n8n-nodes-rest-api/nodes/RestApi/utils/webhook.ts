@@ -1,6 +1,5 @@
 import { timingSafeEqual } from 'node:crypto';
 
-import jwt from 'jsonwebtoken';
 import type {
 	ICredentialDataDecryptedObject,
 	IDataObject,
@@ -11,6 +10,7 @@ import type {
 	MultiPartFormData,
 } from 'n8n-workflow';
 import { BINARY_ENCODING, NodeOperationError, WorkflowConfigurationError } from 'n8n-workflow';
+import { verifyJwt, type JwtAlgorithm } from '@wetomate/n8n-node-toolkit/jwt-verification';
 
 import { buildSchema, validateRequestBody } from './validation';
 
@@ -261,9 +261,7 @@ async function validateAuthentication(
 				credentials.keyType === 'pemKey'
 					? formatPublicKey(String(key ?? ''))
 					: String(key ?? '');
-			const decoded = jwt.verify(token, verificationKey, {
-				algorithms: [credentials.algorithm as jwt.Algorithm],
-			});
+			const decoded = verifyJwt(token, verificationKey, credentials.algorithm as JwtAlgorithm);
 			return typeof decoded === 'string' ? { value: decoded } : (decoded as IDataObject);
 		} catch {
 			throw webhookError(context, 403, 'Authentication data is invalid');
@@ -325,7 +323,12 @@ export function isIpAllowed(
 				const [network, prefixText] = entry.split('/');
 				const prefix = Number(prefixText);
 				const parsedNetwork = parseIp(network);
-				if (parsedNetwork && Number.isInteger(prefix) && prefix >= 0 && prefix <= parsedNetwork.bits)
+				if (
+					parsedNetwork &&
+					Number.isInteger(prefix) &&
+					prefix >= 0 &&
+					prefix <= parsedNetwork.bits
+				)
 					ranges.push({ network: parsedNetwork, prefix });
 			} else {
 				const parsed = parseIp(entry);
@@ -348,7 +351,8 @@ function parseIp(value?: string): ParsedIp | undefined {
 	if (!value) return undefined;
 	if (!value.includes(':')) {
 		const octets = value.split('.').map(Number);
-		return octets.length === 4 && octets.every((octet) => Number.isInteger(octet) && octet >= 0 && octet <= 255)
+		return octets.length === 4 &&
+			octets.every((octet) => Number.isInteger(octet) && octet >= 0 && octet <= 255)
 			? { bytes: octets, bits: 32 }
 			: undefined;
 	}
@@ -358,8 +362,12 @@ function parseIp(value?: string): ParsedIp | undefined {
 	const left = halves[0] ? halves[0].split(':') : [];
 	const right = halves[1] ? halves[1].split(':') : [];
 	if (halves.length === 1 && left.length !== 8) return undefined;
-	const groups = halves.length === 2 ? [...left, ...Array(8 - left.length - right.length).fill('0'), ...right] : left;
-	if (groups.length !== 8 || groups.some((group) => !/^[0-9a-f]{1,4}$/i.test(group))) return undefined;
+	const groups =
+		halves.length === 2
+			? [...left, ...Array(8 - left.length - right.length).fill('0'), ...right]
+			: left;
+	if (groups.length !== 8 || groups.some((group) => !/^[0-9a-f]{1,4}$/i.test(group)))
+		return undefined;
 	const bytes = groups.flatMap((group) => {
 		const number = Number.parseInt(group, 16);
 		return [number >> 8, number & 0xff];
