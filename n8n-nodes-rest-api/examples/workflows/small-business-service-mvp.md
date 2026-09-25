@@ -11,6 +11,6 @@ The matching [`small-business-service-mvp.insomnia.json`](./small-business-servi
 - `http://localhost:5678/webhook-test` while listening for a test event;
 - `http://localhost:5678/webhook` after activating the workflow.
 
-The workflow's sticky notes contain the same request examples as the Insomnia collection. The health endpoint returns `service-mvp-ok` immediately and does not start a workflow execution.
+The workflow's sticky notes contain the same request examples as the Insomnia collection. The strict-validation endpoint returns `400` and records a failed execution without running downstream nodes when the request body is invalid. The health endpoint returns `service-mvp-ok` immediately and does not start a workflow execution.
 
 Before testing a scenario, select **Listen for test event** on its REST API trigger. The multipart attachment request uses the included sample-attachment.txt file; replace its path in Insomnia with a local image or document when needed.

@@ -12,7 +12,7 @@ import type {
 import { BINARY_ENCODING, NodeOperationError, WorkflowConfigurationError } from 'n8n-workflow';
 import { verifyJwt, type JwtAlgorithm } from '@wetomate/n8n-node-toolkit/jwt-verification';
 
-import { buildSchema, validateRequestBody } from './validation';
+import { buildSchema, type ValidationResult, validateRequestBody } from './validation';
 
 type WebhookOptions = {
 	binaryPropertyName?: string;
@@ -68,31 +68,37 @@ export async function handleRestApiWebhook(
 
 	const content = getRequestContent(request);
 	if (context.getNodeParameter('validateBody', true) as boolean) {
+		let validation: ValidationResult;
 		try {
-			const validation = validateRequestBody(
+			validation = validateRequestBody(
 				content.body,
 				buildSchema(context),
 				context.getNodeParameter('ajvOptions', {}) as IDataObject,
 			);
-			if (!validation.valid) {
-				const statusCode = context.getNodeParameter('validationErrorCode', 400) as number;
-				response.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
-				response.end(
-					JSON.stringify({
-						error: 'Request body validation failed',
-						details: validation.errors.map(({ instancePath, keyword, message, params }) => ({
-							instancePath,
-							keyword,
-							message,
-							params,
-						})),
-					}),
-				);
-				return { noWebhookResponse: true };
-			}
 		} catch (error) {
 			throw new NodeOperationError(context.getNode(), error as Error, {
 				description: 'Review the JSON Schema and AJV options configured on this node.',
+			});
+		}
+
+		if (!validation.valid) {
+			const statusCode = context.getNodeParameter('validationErrorCode', 400) as number;
+			const details = validation.errors.map((error) => ({
+				instancePath: getValidationInstancePath(error),
+				keyword: error.keyword,
+				message: error.message,
+				params: error.params,
+			}));
+			const validationError = {
+				error: 'Request body validation failed',
+				details,
+			};
+
+			response.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8' });
+			response.end(JSON.stringify(validationError));
+
+			throw new NodeOperationError(context.getNode(), validationError.error, {
+				description: JSON.stringify({ statusCode, details }),
 			});
 		}
 	}
@@ -149,6 +155,13 @@ export async function handleRestApiWebhook(
 		webhookResponse: options.responseData,
 		workflowData: prepareOutput(outputItem),
 	};
+}
+
+function getValidationInstancePath(error: unknown): string | undefined {
+	const candidate = error as { instancePath?: unknown; dataPath?: unknown };
+	if (typeof candidate.instancePath === 'string') return candidate.instancePath;
+	if (typeof candidate.dataPath === 'string') return candidate.dataPath;
+	return undefined;
 }
 
 function shouldRunWorkflow(context: IWebhookFunctions): boolean {

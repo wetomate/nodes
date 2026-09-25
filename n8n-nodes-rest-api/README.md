@@ -15,7 +15,7 @@
 - Define validation with visual fields or a complete JSON Schema.
 - Configure AJV error collection, type coercion, default insertion, additional-property removal, strict mode, and standard format validation.
 
-Invalid request bodies receive a JSON error response with a configurable `4xx` status. They don't continue through the workflow. Schema configuration errors stop the execution with an n8n configuration error.
+Invalid request bodies receive a JSON error response with a configurable `4xx` status. n8n records the validation failure as a failed execution at the REST API node, and downstream nodes don't run. Schema configuration errors stop the execution with an n8n configuration error.
 
 ## Install
 

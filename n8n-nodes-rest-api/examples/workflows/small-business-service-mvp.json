@@ -82,7 +82,7 @@
 		},
 		{
 			"parameters": {
-				"content": "## 6. Demonstrate strict validation\n\nShow the client-facing error returned before the workflow starts. Additional properties are rejected, the email must be valid, and the request ID must be a positive integer.\n\n### Invalid request\n\n```bash\ncurl -i -X POST '{{N8N_BASE_URL}}/wetomate/mvp/validation-demo' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"requestId\":\"wrong\",\"email\":\"invalid\",\"unexpected\":true}'\n```\n\n### Valid request\n\n```bash\ncurl -X POST '{{N8N_BASE_URL}}/wetomate/mvp/validation-demo' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"requestId\":1001,\"email\":\"alice@example.com\"}'\n```",
+				"content": "## 6. Demonstrate strict validation\n\nShow the client-facing error and the failed execution recorded at the REST API node. Downstream nodes do not run for an invalid request. Additional properties are rejected, the email must be valid, and the request ID must be a positive integer.\n\n### Invalid request\n\n```bash\ncurl -i -X POST '{{N8N_BASE_URL}}/wetomate/mvp/validation-demo' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"requestId\":\"wrong\",\"email\":\"invalid\",\"unexpected\":true}'\n```\n\n### Valid request\n\n```bash\ncurl -X POST '{{N8N_BASE_URL}}/wetomate/mvp/validation-demo' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\"requestId\":1001,\"email\":\"alice@example.com\"}'\n```",
 				"height": 882,
 				"width": 500,
 				"color": 7

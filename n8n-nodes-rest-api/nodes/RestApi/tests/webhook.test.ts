@@ -1,9 +1,9 @@
-import type { IWebhookFunctions } from 'n8n-workflow';
+import { NodeOperationError, type IWebhookFunctions } from 'n8n-workflow';
 
 import { handleRestApiWebhook } from '../utils/webhook';
 
 describe('REST API webhook unit behavior', () => {
-	it('returns configured validation details without workflow data', async () => {
+	it('returns configured validation details and records a failed execution error', async () => {
 		const response = responseMock();
 		const context = webhookContext(
 			{
@@ -24,12 +24,19 @@ describe('REST API webhook unit behavior', () => {
 			response,
 		);
 
-		await expect(handleRestApiWebhook(context)).resolves.toEqual({
-			noWebhookResponse: true,
+		const result = handleRestApiWebhook(context);
+		await expect(result).rejects.toBeInstanceOf(NodeOperationError);
+		await expect(result).rejects.toMatchObject({
+			message: 'Request body validation failed',
+			description: expect.stringContaining('"statusCode":422'),
+		});
+		await expect(result).rejects.toMatchObject({
+			description: expect.stringContaining('"keyword":"format"'),
 		});
 		expect(response.writeHead).toHaveBeenCalledWith(422, {
 			'Content-Type': 'application/json; charset=utf-8',
 		});
+		expect(response.end).toHaveBeenCalledTimes(1);
 		const payload = JSON.parse(response.end.mock.calls[0][0] as string) as {
 			error: string;
 			details: Array<{ keyword: string }>;

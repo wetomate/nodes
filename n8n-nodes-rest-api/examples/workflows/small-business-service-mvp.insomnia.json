@@ -217,7 +217,7 @@
 			"modified": 0,
 			"created": 0,
 			"name": "6a - Invalid request (expect 400)",
-			"description": "The workflow should reject this before execution because the ID, email, and additional property are invalid.",
+			"description": "The REST API node should return 400 and record a failed execution without running downstream nodes because the ID, email, and additional property are invalid.",
 			"method": "POST",
 			"body": {
 				"mimeType": "application/json",
