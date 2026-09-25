@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-rest-api",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"description": "Webhook-compatible REST API trigger with AJV JSON Schema validation",
 	"keywords": [
 		"n8n-community-node-package"

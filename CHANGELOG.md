@@ -12,6 +12,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Documented the Duo Auth API check and logo endpoints in the Duo package README.
 - Added `npm run dev:clean` to reset only the persistent n8n development data volume when stale workflows remain.
 
+## n8n-nodes-rest-api 1.1.0 - 2026-09-25
+
+### Changed
+
+- Record invalid REST API request bodies as failed n8n executions while preserving the configured `4xx` response and stopping downstream nodes.
+
 ## n8n-nodes-rest-api 1.0.1 - 2026-09-20
 
 ### Fixed
