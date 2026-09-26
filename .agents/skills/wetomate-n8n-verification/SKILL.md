@@ -33,6 +33,7 @@ If any eligibility decision needs marketplace or npm state, verify it online. La
 Then check the technical requirements that apply to the package:
 
 - TypeScript and current n8n package structure and metadata;
+- registered node entry points and source naming, ensuring only files listed under `package.json`'s `n8n.nodes` use the `.node.ts` suffix;
 - English-only UI text, errors, and public documentation;
 - no runtime dependencies, direct environment-variable access, or direct file-system access;
 - safe credential handling, useful errors, input validation, and no secret or request-body logging;

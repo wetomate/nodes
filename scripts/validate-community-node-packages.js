@@ -90,6 +90,11 @@ function validateNodePackage(directory) {
 	for (const registeredEntry of registeredEntries) {
 		validateRegisteredEntry(packageRoot, packageLabel, registeredEntry);
 	}
+
+	const registeredNodeSources = new Set(
+		nodes.map(getSourceRelativePath).filter(Boolean),
+	);
+	validateNodeSourceNames(packageRoot, packageLabel, registeredNodeSources);
 }
 
 function readRegisteredEntries(nodePackage, packageLabel, entryType) {
@@ -106,20 +111,15 @@ function readRegisteredEntries(nodePackage, packageLabel, entryType) {
 }
 
 function validateRegisteredEntry(packageRoot, packageLabel, registeredEntry) {
-	if (
-		typeof registeredEntry !== "string" ||
-		!registeredEntry.startsWith("dist/") ||
-		!registeredEntry.endsWith(".js") ||
-		registeredEntry.includes("\\") ||
-		path.posix.normalize(registeredEntry) !== registeredEntry
-	) {
+	const sourceRelativePath = getSourceRelativePath(registeredEntry);
+
+	if (!sourceRelativePath) {
 		errors.push(
 			`${packageLabel} has an invalid registered n8n entry point: ${String(registeredEntry)}.`,
 		);
 		return;
 	}
 
-	const sourceRelativePath = `${registeredEntry.slice("dist/".length, -".js".length)}.ts`;
 	const sourcePath = path.join(packageRoot, sourceRelativePath);
 
 	if (!fs.existsSync(sourcePath)) {
@@ -127,6 +127,51 @@ function validateRegisteredEntry(packageRoot, packageLabel, registeredEntry) {
 			`${packageLabel} registers ${registeredEntry}, but source file ${sourceRelativePath} does not exist.`,
 		);
 	}
+}
+
+function getSourceRelativePath(registeredEntry) {
+	if (
+		typeof registeredEntry !== "string" ||
+		!registeredEntry.startsWith("dist/") ||
+		!registeredEntry.endsWith(".js") ||
+		registeredEntry.includes("\\") ||
+		path.posix.normalize(registeredEntry) !== registeredEntry
+	) {
+		return undefined;
+	}
+
+	return `${registeredEntry.slice("dist/".length, -".js".length)}.ts`;
+}
+
+function validateNodeSourceNames(
+	packageRoot,
+	packageLabel,
+	registeredNodeSources,
+) {
+	const nodesDirectory = path.join(packageRoot, "nodes");
+	if (!fs.existsSync(nodesDirectory)) return;
+
+	const unregisteredNodeSources = findFiles(nodesDirectory)
+		.filter((sourcePath) => sourcePath.endsWith(".node.ts"))
+		.map((sourcePath) =>
+			path.relative(packageRoot, sourcePath).split(path.sep).join("/"),
+		)
+		.filter((sourcePath) => !registeredNodeSources.has(sourcePath));
+
+	if (unregisteredNodeSources.length > 0) {
+		errors.push(
+			`${packageLabel} has unregistered .node.ts source file(s): ${unregisteredNodeSources.join(", ")}. Only files registered under n8n.nodes may use the .node.ts suffix.`,
+		);
+	}
+}
+
+function findFiles(directory) {
+	return fs
+		.readdirSync(directory, { withFileTypes: true })
+		.flatMap((entry) => {
+			const entryPath = path.join(directory, entry.name);
+			return entry.isDirectory() ? findFiles(entryPath) : [entryPath];
+		});
 }
 
 function readPackage(directory) {

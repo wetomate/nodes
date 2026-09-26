@@ -15,7 +15,6 @@ import { safeStringify } from '../utils/duoUtils';
 
 type DuoNodeMode = 'regular' | 'tool';
 
-// eslint-disable-next-line @n8n/community-nodes/icon-validation
 export abstract class DuoSecurityV1Base implements INodeType {
 	icon: INodeTypeDescription['icon'] = {
 		light: 'file:duo.svg',
@@ -51,13 +50,13 @@ export abstract class DuoSecurityV1Base implements INodeType {
 			properties: duoProperties,
 			...(isTool
 				? {
-					usableAsTool: {
-						replacements: {
-							description:
-								'Use Duo Security to verify a user or start a second-factor authentication challenge. Use PREAUTH before AUTH when checking whether a user can authenticate. Treat only an explicit result.response.result of allow as approval; never continue after a missing, denied, expired, or failed response.',
+						usableAsTool: {
+							replacements: {
+								description:
+									'Use Duo Security to verify a user or start a second-factor authentication challenge. Use PREAUTH before AUTH when checking whether a user can authenticate. Treat only an explicit result.response.result of allow as approval; never continue after a missing, denied, expired, or failed response.',
+							},
 						},
-					},
-				}
+					}
 				: {}),
 		};
 	}

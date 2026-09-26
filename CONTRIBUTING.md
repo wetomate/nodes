@@ -27,6 +27,8 @@ Keep configuration that should apply to every community node in the root `config
 
 Declare `@wetomate/n8n-node-toolkit` as a development dependency in every node package, using a caret range that matches the toolkit workspace version. npm links the current workspace for repository builds, and the shared build derives entry points from the package's `n8n` metadata and bundles the toolkit into its generated JavaScript. Published nodes must have no runtime dependencies and must keep `n8n-workflow` as a `*` peer dependency. Run `npm run check:packages` after changing versions, dependencies, or registered entries.
 
+Use the `.node.ts` suffix only for source files registered under `package.json`'s `n8n.nodes`. Name versioned implementations, base classes, and other internal node files with `.ts`; n8n tooling interprets `.node.ts` files as standalone node registrations.
+
 ## Tests
 
 Behavior changes must include proportionate automated tests. Bug fixes must include a regression test that fails without the fix.

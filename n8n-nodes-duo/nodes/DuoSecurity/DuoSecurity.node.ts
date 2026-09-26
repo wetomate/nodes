@@ -1,6 +1,6 @@
 import type { INodeTypeBaseDescription, IVersionedNodeType } from 'n8n-workflow';
 import { VersionedNodeType } from 'n8n-workflow';
-import { DuoSecurityV1 } from './V1/DuoSecurityV1.node';
+import { DuoSecurityV1 } from './V1/DuoSecurityV1';
 
 export class DuoSecurity extends VersionedNodeType {
 	constructor() {

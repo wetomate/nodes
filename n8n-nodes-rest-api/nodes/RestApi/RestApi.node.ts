@@ -1,7 +1,7 @@
 import type { INodeTypeBaseDescription, IVersionedNodeType } from 'n8n-workflow';
 import { VersionedNodeType } from 'n8n-workflow';
 
-import { RestApiV1 } from './V1/RestApiV1.node';
+import { RestApiV1 } from './V1/RestApiV1';
 
 export class RestApi extends VersionedNodeType {
 	constructor() {

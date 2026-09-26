@@ -67,7 +67,7 @@ Configuration intended for all community node packages belongs in `configs`. The
 official n8n CLI configuration for linting and keep node-local configuration files aligned with the official tool:
 
 | Concern    | Shared base                                             | Node-local entry point          |
-|------------|---------------------------------------------------------|---------------------------------|
+| ---------- | ------------------------------------------------------- | ------------------------------- |
 | TypeScript | `configs/tsconfig.base.json`                            | `n8n-nodes-*/tsconfig.json`     |
 | ESLint     | `@n8n/node-cli/eslint`                                  | `n8n-nodes-*/eslint.config.mjs` |
 | Prettier   | `configs/.prettierrc.base.js`                           | `n8n-nodes-*/.prettierrc.js`    |
@@ -85,3 +85,5 @@ automatically. Reuse the base configuration files above, add only provider-speci
 current `@wetomate/n8n-node-toolkit` version as a development dependency with a caret range. Register every node and
 credential under the package's `n8n` metadata, use the shared bundler, and keep `n8n-workflow` as a `*` peer dependency.
 Update release selection, the root package table, and this map when the new package changes those lists.
+
+Only source files registered under `n8n.nodes` should use the `.node.ts` suffix. Keep versioned node implementations, shared base classes, and helpers as `.ts` files so n8n does not discover them as additional standalone nodes.

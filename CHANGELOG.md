@@ -12,6 +12,18 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Documented the Duo Auth API check and logo endpoints in the Duo package README.
 - Added `npm run dev:clean` to reset only the persistent n8n development data volume when stale workflows remain.
 
+## n8n-nodes-rest-api 1.1.1 - 2026-09-26
+
+### Fixed
+
+- Renamed the internal REST API version implementation so only the registered node entry point uses the `.node.ts` suffix.
+
+## n8n-nodes-duo 1.1.1 - 2026-09-26
+
+### Fixed
+
+- Renamed internal Duo node implementations so only registered node entry points use the `.node.ts` suffix.
+
 ## n8n-nodes-rest-api 1.1.0 - 2026-09-25
 
 ### Changed

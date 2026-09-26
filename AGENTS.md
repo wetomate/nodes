@@ -15,6 +15,7 @@ Use the Wetomate identity consistently across public names, packages, documentat
 - Keep generic node-building classes and types in the shared toolkit; keep provider-specific behavior in its node package.
 - Preserve compatibility unless a breaking change is intentional and documented.
 - Follow the existing TypeScript, ESLint, and Prettier configuration.
+- Use `.node.ts` only for TypeScript files registered under a package's `n8n.nodes`; name internal versioned implementations, base classes, and helpers with `.ts` so n8n tooling does not treat them as standalone nodes.
 - Work within the affected package and use its npm scripts. Run `npm run build` and, where available, `npm run lint` and `npm test` before finishing.
 - Use `npm run dev:check` for full containerized validation and `npm run dev` when changes must be exercised in the n8n development runtime.
 - Never commit credentials, registry tokens, generated `dist` output, or local `.npmrc` files.

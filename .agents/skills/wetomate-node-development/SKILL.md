@@ -9,6 +9,8 @@ Implement provider-specific behavior in its node package and reusable node-build
 
 Before editing, inspect the affected package's `package.json`, node registration, versioned node structure, and nearby implementations. Preserve n8n's expected `INodeType`, credential, property, and item-index behavior.
 
+Use the `.node.ts` suffix only for source files registered under `package.json`'s `n8n.nodes`. Name versioned implementations, base classes, and helpers with `.ts`; n8n tooling treats `.node.ts` files as standalone node registrations.
+
 When adding or changing a node:
 
 - Keep display properties declarative and execution logic small; extract pure request/response transformations where useful.
