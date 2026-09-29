@@ -39,8 +39,8 @@ describe('Duo example workflows', () => {
 				true,
 			);
 			expect(
-				workflow.nodes.some((node) => node.type === 'n8n-nodes-duo.duoSecurityTool'),
-			).toBe(fileName === 'check-api-health.json');
+			workflow.nodes.some((node) => node.type === 'n8n-nodes-duo.duoSecurityTool'),
+		).toBe(false);
 			expect(workflow.nodes.every((node) => node.credentials === undefined)).toBe(true);
 
 			for (const [source, outputs] of Object.entries(workflow.connections)) {
@@ -63,7 +63,7 @@ describe('Duo example workflows', () => {
 		expect(new Set(duoNodes.map((node) => node.parameters.endpoint))).toEqual(
 			new Set(['ping', 'check', 'preauth', 'auth', 'auth_status', 'logo']),
 		);
-		expect(toolNode.type).toBe('n8n-nodes-duo.duoSecurityTool');
+		expect(toolNode.type).toBe('n8n-nodes-duo.duoSecurity');
 		expect(workflow.nodes.filter((node) => node.type === 'n8n-nodes-base.manualTrigger')).toHaveLength(5);
 		expect(workflow.connections['Duo Security Tool'].ai_tool).toEqual([
 			[{ node: 'Duo Access Assistant', type: 'ai_tool', index: 0 }],

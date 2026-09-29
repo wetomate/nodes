@@ -1,3 +1,4 @@
+/* eslint-disable n8n-nodes-base/node-filename-against-convention */
 import {
 	IDataObject,
 	INodeType,
@@ -13,8 +14,6 @@ import { duoProperties } from './duoProperties';
 import { mapDuoParameters } from './duoParameterMapping';
 import { safeStringify } from '../utils/duoUtils';
 
-type DuoNodeMode = 'regular' | 'tool';
-
 export abstract class DuoSecurityV1Base implements INodeType {
 	icon: INodeTypeDescription['icon'] = {
 		light: 'file:duo.svg',
@@ -23,41 +22,32 @@ export abstract class DuoSecurityV1Base implements INodeType {
 
 	description: INodeTypeDescription;
 
-	protected constructor(baseDescription: INodeTypeBaseDescription, mode: DuoNodeMode) {
-		const isTool = mode === 'tool';
+	protected constructor(baseDescription: INodeTypeBaseDescription) {
 		this.description = {
 			...baseDescription,
-			displayName: isTool ? 'Duo Security AI Tool' : 'Duo Security',
-			name: isTool ? 'duoSecurityTool' : 'duoSecurity',
+			displayName: 'Duo Security',
+			name: 'duoSecurity',
 			icon: { light: 'file:duo.svg', dark: 'file:duo-dark.svg' },
 			group: ['transform'],
-			subtitle: isTool
-				? 'Duo Security operations for AI agents'
-				: 'Duo Security Multi-factor Authentication/Authorization',
+			subtitle: 'Duo Security Multi-factor Authentication/Authorization',
 			version: 1,
-			description: isTool
-				? 'Use Duo Security operations as a tool for an AI agent.'
-				: 'Connects n8n workflows to Duo Security for user verification and second-factor authentication.',
+			description:
+				'Connects n8n workflows to Duo Security for user verification and second-factor authentication.',
 			builderHint: {
-				message: isTool
-					? 'Use this tool to check Duo user access or start a second-factor authentication challenge when the workflow requires it.'
-					: 'Use for Duo user verification, pre-authentication, Duo Push approval, or authentication status checks.',
+				message:
+					'Use for Duo user verification, pre-authentication, Duo Push approval, or authentication status checks.',
 			},
-			defaults: { name: isTool ? 'Duo Security AI Tool' : 'Duo Security' },
-			inputs: isTool ? [] : [NodeConnectionTypes.Main],
-			outputs: isTool ? [NodeConnectionTypes.AiTool] : [NodeConnectionTypes.Main],
+			defaults: { name: 'Duo Security' },
+			inputs: [NodeConnectionTypes.Main],
+			outputs: [NodeConnectionTypes.Main],
 			credentials: [{ name: 'duoSecurityApi', required: true }],
 			properties: duoProperties,
-			...(isTool
-				? {
-						usableAsTool: {
-							replacements: {
-								description:
-									'Use Duo Security to verify a user or start a second-factor authentication challenge. Use PREAUTH before AUTH when checking whether a user can authenticate. Treat only an explicit result.response.result of allow as approval; never continue after a missing, denied, expired, or failed response.',
-							},
-						},
-					}
-				: {}),
+			usableAsTool: {
+				replacements: {
+					description:
+						'Use Duo Security to verify a user or start a second-factor authentication challenge. Use PREAUTH before AUTH when checking whether a user can authenticate. Treat only an explicit result.response.result of allow as approval; never continue after a missing, denied, expired, or failed response.',
+				},
+			},
 		};
 	}
 

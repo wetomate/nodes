@@ -262,7 +262,7 @@
 			},
 			"id": "wetomate-example-duo-ai-tool",
 			"name": "Duo Security Tool",
-			"type": "n8n-nodes-duo.duoSecurityTool",
+			"type": "n8n-nodes-duo.duoSecurity",
 			"typeVersion": 1,
 			"position": [-56, 1496]
 		}
