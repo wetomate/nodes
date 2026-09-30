@@ -50,6 +50,16 @@ describe('Duo Security node', () => {
 		expect(node.nodeVersions[1].description.outputs).toEqual(['main']);
 	});
 
+	it("keeps the regular description for n8n's generated AI tool", () => {
+		const node = new DuoSecurity();
+		const description = node.nodeVersions[1].description;
+
+		expect(description.name).toBe('duoSecurity');
+		expect(description.usableAsTool).toBeDefined();
+		expect(description.inputs).toEqual(['main']);
+		expect(description.outputs).toEqual(['main']);
+	});
+
 	it('uses a square SVG canvas for the node icon', () => {
 		const icon = readFileSync(join(__dirname, '../../nodes/DuoSecurity/duo.svg'), 'utf8');
 
