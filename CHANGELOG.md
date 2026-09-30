@@ -12,21 +12,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Documented the Duo Auth API check and logo endpoints in the Duo package README.
 - Added `npm run dev:clean` to reset only the persistent n8n development data volume when stale workflows remain.
 
-## n8n-nodes-duo 2.0.1 - 2026-09-30
+## n8n-nodes-duo 1.2.1 - 2026-09-30
 
 ### Fixed
 
-- Corrected the capability showcase AI workflow to reference n8n's generated `duoSecurityTool` companion type.
-
-## n8n-nodes-duo 2.0.0 - 2026-09-29
-
-### Changed
-
-- Replaced the standalone Duo Security AI Tool node with AI tool support on the regular Duo Security node.
-
-### Breaking
-
-- Workflows using the removed `n8n-nodes-duo.duoSecurityTool` node type must replace it with `n8n-nodes-duo.duoSecurity` and connect it to the AI workflow as a tool.
+- Consolidated the package registration on the regular Duo Security node while preserving n8n's generated `duoSecurityTool` type.
+- Corrected the capability showcase AI workflow to reference the generated AI tool type.
 
 ## n8n-nodes-rest-api 1.1.1 - 2026-09-26
 
