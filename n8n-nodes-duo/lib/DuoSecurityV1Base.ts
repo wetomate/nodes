@@ -1,4 +1,3 @@
-/* eslint-disable n8n-nodes-base/node-filename-against-convention */
 import {
 	IDataObject,
 	INodeType,
@@ -10,9 +9,9 @@ import {
 	type INodeExecutionData,
 } from 'n8n-workflow';
 
-import { duoProperties } from './duoProperties';
-import { mapDuoParameters } from './duoParameterMapping';
-import { safeStringify } from '../utils/duoUtils';
+import { duoProperties } from '../nodes/DuoSecurity/V1/duoProperties';
+import { mapDuoParameters } from '../nodes/DuoSecurity/V1/duoParameterMapping';
+import { safeStringify } from '../nodes/DuoSecurity/utils/duoUtils';
 
 export abstract class DuoSecurityV1Base implements INodeType {
 	icon: INodeTypeDescription['icon'] = {

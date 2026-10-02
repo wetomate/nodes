@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-duo",
-	"version": "1.2.1",
+	"version": "1.3.0",
 	"description": "Duo Security multi-factor authentication community node for n8n",
 	"keywords": [
 		"n8n-community-node-package",
@@ -38,8 +38,7 @@
 		"prepublishOnly": "npm run build && npm run lint && npm test"
 	},
 	"files": [
-		"dist",
-		"examples"
+		"dist"
 	],
 	"n8n": {
 		"strict": true,
