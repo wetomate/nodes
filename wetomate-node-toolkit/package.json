@@ -1,6 +1,6 @@
 {
 	"name": "@wetomate/n8n-node-toolkit",
-	"version": "1.0.3",
+	"version": "2.0.0",
 	"description": "Shared TypeScript utilities for building maintainable n8n nodes",
 	"main": "dist/index.js",
 	"types": "dist/index.d.ts",
