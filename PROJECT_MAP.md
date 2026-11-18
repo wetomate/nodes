@@ -28,12 +28,13 @@ depend on a provider package.
 
 ## Toolkit dependency resolution
 
-`npm ci` links `@wetomate/n8n-node-toolkit` from the current repository into every `n8n-nodes-*` workspace. Because the
-toolkit appears before the node-package glob in the root workspace list, repository-wide builds compile the current
-toolkit before compiling the nodes.
+`npm ci` links the workspace toolkit into node packages whose range accepts it. Duo and REST API still declare
+`^1.0.3`, so the lockfile installs the published toolkit `1.0.3` separately for each. Repository-wide builds compile
+the current toolkit before any node that uses it.
 
 Each node package declares `@wetomate/n8n-node-toolkit` as a development dependency with a normal npm semver range
-matching the current toolkit version. Do not use `file:`, `link:`, or `workspace:` dependency protocols. The shared
+matching the current toolkit version. The validator also accepts `^1.0.3` for Duo and REST API until each migrates.
+Do not use `file:`, `link:`, or `workspace:` dependency protocols. The shared
 package build derives source entry points from the package's `n8n.nodes` and `n8n.credentials` registrations and bundles
 the toolkit and package implementation dependencies into the generated JavaScript. This preserves maintained sources
 while keeping published community nodes free of runtime dependencies. `npm run check:packages` enforces the toolkit

@@ -29,6 +29,33 @@ describe("community node package validation", () => {
 		assert.match(result.stdout, /Validated 1 community node package/);
 	});
 
+	for (const nodePackageName of ["n8n-nodes-duo", "n8n-nodes-rest-api"]) {
+		it(`accepts the legacy toolkit range for ${nodePackageName}`, async () => {
+			const repositoryRoot = await createRepositoryFixture(
+				{ devDependencies: { "@wetomate/n8n-node-toolkit": "^1.0.3" } },
+				{ nodePackageName },
+			);
+
+			const result = runValidator(repositoryRoot);
+
+			assert.equal(result.status, 0, result.stderr);
+		});
+	}
+
+	it("rejects the legacy toolkit range for other nodes", async () => {
+		const repositoryRoot = await createRepositoryFixture({
+			devDependencies: { "@wetomate/n8n-node-toolkit": "^1.0.3" },
+		});
+
+		const result = runValidator(repositoryRoot);
+
+		assert.equal(result.status, 1);
+		assert.match(
+			result.stderr,
+			/development dependency with \^2\.1\.0; found \^1\.0\.3/,
+		);
+	});
+
 	it("reports dependency and registered-entry violations together", async () => {
 		const repositoryRoot = await createRepositoryFixture({
 			dependencies: { example: "^1.0.0" },
@@ -47,7 +74,7 @@ describe("community node package validation", () => {
 		const result = runValidator(repositoryRoot);
 
 		assert.equal(result.status, 1);
-		assert.match(result.stderr, /development dependency with \^1\.0\.2/);
+		assert.match(result.stderr, /development dependency with \^2\.1\.0/);
 		assert.match(
 			result.stderr,
 			/must not declare runtime dependencies; found example/,
@@ -85,14 +112,15 @@ async function createRepositoryFixture(
 	temporaryRoots.push(repositoryRoot);
 
 	const toolkitRoot = path.join(repositoryRoot, "wetomate-node-toolkit");
-	const nodeRoot = path.join(repositoryRoot, "n8n-nodes-example");
+	const nodePackageName = options.nodePackageName ?? "n8n-nodes-example";
+	const nodeRoot = path.join(repositoryRoot, nodePackageName);
 	await mkdir(path.join(nodeRoot, "nodes"), { recursive: true });
 	await mkdir(path.join(nodeRoot, "credentials"), { recursive: true });
 	await mkdir(toolkitRoot, { recursive: true });
 
 	await writeJson(path.join(toolkitRoot, "package.json"), {
 		name: "@wetomate/n8n-node-toolkit",
-		version: "1.0.2",
+		version: "2.1.0",
 	});
 	await writeFile(
 		path.join(nodeRoot, "nodes/Example.node.ts"),
@@ -110,9 +138,9 @@ async function createRepositoryFixture(
 		"export class ExampleCredentials {}\n",
 	);
 	await writeJson(path.join(nodeRoot, "package.json"), {
-		name: "n8n-nodes-example",
+		name: nodePackageName,
 		devDependencies: {
-			"@wetomate/n8n-node-toolkit": "^1.0.2",
+			"@wetomate/n8n-node-toolkit": "^2.1.0",
 		},
 		peerDependencies: {
 			"n8n-workflow": "*",
