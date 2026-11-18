@@ -8,6 +8,11 @@ const toolkitPackage = readPackage(
 	path.join(repositoryRoot, "wetomate-node-toolkit"),
 );
 const expectedToolkitRange = `^${toolkitPackage.version}`;
+// Remove each exception when that workspace migrates to the current toolkit.
+const legacyToolkitRanges = new Map([
+	["n8n-nodes-duo", "^1.0.3"],
+	["n8n-nodes-rest-api", "^1.0.3"],
+]);
 
 const nodeDirectories = fs
 	.readdirSync(repositoryRoot, { withFileTypes: true })
@@ -34,7 +39,7 @@ if (errors.length > 0) {
 }
 
 console.log(
-	`Validated ${nodeDirectories.length} community node package(s) against ${toolkitPackage.name}@${expectedToolkitRange}.`,
+	`Validated ${nodeDirectories.length} community node package(s) against the ${toolkitPackage.name} dependency policy.`,
 );
 
 function validateNodePackage(directory) {
@@ -45,9 +50,13 @@ function validateNodePackage(directory) {
 	const workflowPeerRange = nodePackage.peerDependencies?.["n8n-workflow"];
 	const runtimeDependencies = Object.keys(nodePackage.dependencies ?? {});
 
-	if (toolkitRange !== expectedToolkitRange) {
+	const allowedToolkitRanges = [expectedToolkitRange];
+	const legacyToolkitRange = legacyToolkitRanges.get(directory);
+	if (legacyToolkitRange) allowedToolkitRanges.push(legacyToolkitRange);
+
+	if (!allowedToolkitRanges.includes(toolkitRange)) {
 		errors.push(
-			`${packageLabel} must use ${toolkitPackage.name} as a development dependency with ${expectedToolkitRange}; found ${toolkitRange ?? "no development dependency"}.`,
+			`${packageLabel} must use ${toolkitPackage.name} as a development dependency with ${allowedToolkitRanges.join(" or ")}; found ${toolkitRange ?? "no development dependency"}.`,
 		);
 	}
 

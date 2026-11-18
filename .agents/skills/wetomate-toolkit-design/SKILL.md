@@ -19,4 +19,6 @@ Use a design pattern only when it makes a recurring variation or lifecycle clear
 
 Before changing a public API, inspect all repository consumers. Describe the invariant, alternatives considered, compatibility impact, and migration path. Preserve backward compatibility when reasonable; otherwise make the break explicit and update every in-repository consumer, test, export, and document together.
 
+For parameter transformers and helper naming, follow `$wetomate-transformers` and the Transformers section of the toolkit README.
+
 Favor narrow public exports, predictable names, immutable inputs where practical, precise TypeScript types, and pure transformations around an explicit side-effect boundary. Add contract tests for public behavior and extension points. Reject abstractions supported by only one speculative use case unless they solve a concrete correctness problem.

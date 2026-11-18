@@ -1,0 +1,4 @@
+interface:
+  display_name: "Wetomate Transformers"
+  short_description: "Use and add documented toolkit transformers"
+  default_prompt: "Use $wetomate-transformers to add or use a toolkit transformer for this mapping."

@@ -12,6 +12,26 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Documented the Duo Auth API check and logo endpoints in the Duo package README.
 - Added `npm run dev:clean` to reset only the persistent n8n development data volume when stale workflows remain.
 
+## @wetomate/n8n-node-toolkit 2.1.0 - 2026-11-18
+
+### Added
+
+- Added the `transformInputItemsToArray`, `transformOptionalCollectionToFields`, and `transformZeroToUndefined` transformers.
+- Added dotted-path support to the `target` mapping rule field and introduced the `staticValue` field.
+- Documented the available transformers and helper naming conventions in the toolkit README, and added the `wetomate-transformers` repository skill.
+
+### Changed
+
+- Made `mapNodeParameters()` preserve mapped value types and throw for invalid untargeted transform results instead of silently ignoring them.
+- Trimmed strings deeply in transform results as well as directly mapped values.
+- Changed targeted transforms to assign their complete result at `target` instead of merging fields at the top level. Dotted output names now create nested paths.
+- Changed `ParameterMappingRule` from an interface to a targeted/untargeted union type.
+
+### Removed
+
+- Removed `processOptionalCollections` and the collections module. Use `transformOptionalCollectionToFields` with provider-specific conversion in the consuming node when needed; the toolkit no longer exposes deprecated APIs.
+- Removed the unused `ParameterTransformer` type alias; use `ParameterValueTransformer` or `TargetedParameterTransformer` instead.
+
 ## n8n-nodes-duo 1.2.1 - 2026-09-30
 
 ### Fixed
